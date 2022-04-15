@@ -34,7 +34,7 @@ resource "azurerm_storage_account" "storage_account" {
   #checkov:skip=CKV2_AZURE_1: Customer Managed Keys are unneeded for this storage account.
   #checkov:skip=CKV2_AZURE_18: Customer Managed Keys are unneeded for this storage account.
 
-  access_tier              = "Standard"
+  acccount_tier            = "Standard"
   account_replication_type = "LRS"
   location                 = var.region
   name                     = "st${lower(replace(local.common_resource_suffix, "-", ""))}"
@@ -63,4 +63,5 @@ resource "azurerm_linux_function_app" "linux_function_app" {
   resource_group_name = azurerm_resource_group.resource_group.name
   service_plan_id     = azurerm_service_plan.service_plan.id
   site_config {}
+  storage_account_name = azurerm_storage_account.storage_account.name
 }
