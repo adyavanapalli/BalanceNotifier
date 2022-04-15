@@ -44,7 +44,7 @@ resource "azurerm_storage_account" "storage_account" {
   min_tls_version           = "TLS1_2"
   network_rules {
     bypass         = ["AzureServices"]
-    default_action = "DENY"
+    default_action = "Deny"
   }
   shared_access_key_enabled = false
 }
