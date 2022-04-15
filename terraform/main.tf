@@ -27,6 +27,11 @@ resource "azurerm_resource_group" "resource_group" {
   name     = "rg-${local.common_resource_suffix}"
 }
 
+#checkov:skip=CKV2_AZURE_1: Customer Managed Keys are unneeded for this storage account.
+#checkov:skip=CKV2_AZURE_18: Customer Managed Keys are unneeded for this storage account.
+#checkov:skip=CKV_AZURE_33: Queue services are unused.
+#checkov:skip=CKV_AZURE_43: Storage account name DOES indeed adhere to naming rules.
+#tfsec:ignore:azure-storage-queue-services-logging-enabled
 resource "azurerm_storage_account" "storage_account" {
   access_tier              = "Standard"
   account_replication_type = "LRS"
@@ -34,6 +39,11 @@ resource "azurerm_storage_account" "storage_account" {
   name                     = "st${lower(replace(local.common_resource_suffix, "-", ""))}"
   resource_group_name      = azurerm_resource_group.resource_group.name
 
+  enable_https_traffic_only = true
+  min_tls_version = "TLS1_2"
+  network_rules {
+    default_action = "DENY"
+  }
   shared_access_key_enabled = false
 }
 
