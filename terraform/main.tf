@@ -40,8 +40,9 @@ resource "azurerm_storage_account" "storage_account" {
   resource_group_name      = azurerm_resource_group.resource_group.name
 
   enable_https_traffic_only = true
-  min_tls_version = "TLS1_2"
+  min_tls_version           = "TLS1_2"
   network_rules {
+    bypass         = ["AzureServices"]
     default_action = "DENY"
   }
   shared_access_key_enabled = false
