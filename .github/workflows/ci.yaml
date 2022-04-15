@@ -1,5 +1,6 @@
 name: CI
 
+concurrency: Production
 on:
   push:
     branches: [main]
@@ -29,7 +30,6 @@ jobs:
         run: docker run --interactive --volume "$(pwd):/src" --rm aquasec/tfsec-scratch /src
 
   terraform:
-    concurrency: Production
     env:
       ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
       ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
