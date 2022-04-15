@@ -71,13 +71,13 @@ resource "azurerm_linux_function_app" "linux_function_app" {
   }
 }
 
-# data "azurerm_role_definition" "role_definition" {
-#   name = "Storage Blob Data Owner"
-# }
+data "azurerm_role_definition" "role_definition" {
+  name = "Storage Blob Data Owner"
+}
 
-# resource "azurerm_role_assignment" "role_assignment" {
-#   principal_id = azurerm_linux_function_app.linux_function_app.identity[0].principal_id
-#   scope        = azurerm_storage_account.storage_account.id
+resource "azurerm_role_assignment" "role_assignment" {
+  principal_id = azurerm_linux_function_app.linux_function_app.identity[0].principal_id
+  scope        = azurerm_storage_account.storage_account.id
 
-#   role_definition_id = data.azurerm_role_definition.role_definition.id
-# }
+  role_definition_id = data.azurerm_role_definition.role_definition.id
+}
