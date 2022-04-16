@@ -98,6 +98,10 @@ jobs:
         # TODO: Do not hardcode func-BalanceNotifier-eastus and instead get it
         # from terraform output.
         run: |
-          which az
+          az login --service-principal \
+                   --username "$ARM_CLIENT_ID" \
+                   --password "$ARM_CLIENT_SECRET" \
+                   --tenant "$ARM_TENANT_ID"
+
           func azure functionapp publish func-BalanceNotifier-eastus --csharp
         working-directory: BalanceNotifier
