@@ -33,6 +33,7 @@ resource "azurerm_resource_group" "resource_group" {
 #tfsec:ignore:azure-storage-queue-services-logging-enabled
 resource "azurerm_storage_account" "storage_account" {
   #checkov:skip=CKV_AZURE_33: Queue services are unused.
+  #checkov:skip=CKV_AZURE_35: This will be addressed in a later TODO.
   #checkov:skip=CKV_AZURE_43: Storage account name DOES indeed adhere to naming rules.
   #checkov:skip=CKV2_AZURE_1: Customer Managed Keys are unneeded for this storage account.
   #checkov:skip=CKV2_AZURE_18: Customer Managed Keys are unneeded for this storage account.
@@ -55,6 +56,10 @@ resource "azurerm_storage_account" "storage_account" {
   #   bypass         = ["AzureServices"]
   #   default_action = "Deny"
   # }
+  #tfsec:ignore:azure-storage-default-action-deny
+  # Funny, because you would think a default allow would allow Microsoft
+  # services too...
+  #tfsec:ignore:azure-storage-allow-microsoft-service-bypass
   network_rules {
     default_action = "Allow"
   }
