@@ -71,3 +71,31 @@ jobs:
         if: github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve "plan"
         working-directory: terraform
+
+  deploy:
+    env:
+      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+
+    environment: Production
+    needs: terraform
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Setup Azure Function Core Tools
+        run: npm install --global azure-functions-core-tools@4 --unsafe-perm true
+
+      - name: Deploy Azure Function App
+        # TODO: Do not hardcode func-BalanceNotifier-eastus and instead get it
+        # from terraform output.
+        run: func azure functionapp publish func-BalanceNotifier-eastus --csharp
+        working-directory: BalanceNotifier
