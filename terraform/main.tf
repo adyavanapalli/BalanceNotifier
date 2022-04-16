@@ -56,9 +56,9 @@ resource "azurerm_storage_account" "storage_account" {
   #   bypass         = ["AzureServices"]
   #   default_action = "Deny"
   # }
-  #tfsec:ignore:azure-storage-default-action-deny
   # Funny, because you would think a default allow would allow Microsoft
   # services too...
+  #tfsec:ignore:azure-storage-default-action-deny
   #tfsec:ignore:azure-storage-allow-microsoft-service-bypass
   network_rules {
     default_action = "Allow"
