@@ -143,6 +143,7 @@ resource "azurerm_key_vault" "key_vault" {
     bypass         = "AzureServices"
     default_action = "Deny"
   }
+  purge_protection_enabled = true
 }
 
 resource "azurerm_key_vault_secret" "key_vault_secrets" {
@@ -157,10 +158,11 @@ resource "azurerm_key_vault_secret" "key_vault_secrets" {
     TWILIO_RECIPIENT_PHONE_NUMBER = var.twilio_recipient_phone_number
   }
 
-  content_type = "text/plain"
-  key_vault_id = azurerm_key_vault.key_vault.id
-  name         = each.key
-  value        = each.value
+  content_type    = "text/plain"
+  expiration_date = "2022-12-31T23:59:59Z"
+  key_vault_id    = azurerm_key_vault.key_vault.id
+  name            = each.key
+  value           = each.value
 }
 
 resource "azurerm_role_assignment" "role_assignment" {
