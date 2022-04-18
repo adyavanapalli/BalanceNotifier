@@ -37,6 +37,11 @@ public class TwilioSmsApiService : ISmsApiService
     };
 
     /// <summary>
+    /// A service used to manage secrets.
+    /// </summary>
+    private readonly ISecretsService _secretsService;
+
+    /// <summary>
     /// A string identifier (SID) used to identify a specific Twilio SMS API account resource.
     /// </summary>
     private readonly string _twilioAccountSid;
@@ -54,19 +59,22 @@ public class TwilioSmsApiService : ISmsApiService
     /// <summary>
     /// Constructor.
     /// </summary>
-    public TwilioSmsApiService()
+    /// <param name="secretsService">A service used to manage secrets.</param>
+    public TwilioSmsApiService(ISecretsService? secretsService = null)
     {
-        _twilioAccountSid = Environment.GetEnvironmentVariable(EnvironmentVariable.TwilioAccountSid)
-            ?? throw new ConfigurationErrorsException($"The environment variable `{EnvironmentVariable.TwilioAccountSid}` is not defined.");
+        _secretsService = secretsService ?? new KeyVaultSecretsService();
 
-        _twilioSenderPhoneNumber = Environment.GetEnvironmentVariable(EnvironmentVariable.TwilioSenderPhoneNumber)
-            ?? throw new ConfigurationErrorsException($"The environment variable `{EnvironmentVariable.TwilioSenderPhoneNumber}` is not defined.");
+        _twilioAccountSid = _secretsService.GetSecret(SecretVariable.TwilioAccountSid)
+            ?? throw new ConfigurationErrorsException($"The secret variable `{SecretVariable.TwilioAccountSid}` is not defined.");
 
-        _twilioRecipientPhoneNumber = Environment.GetEnvironmentVariable(EnvironmentVariable.TwilioRecipientPhoneNumber)
-            ?? throw new ConfigurationErrorsException($"The environment variable `{EnvironmentVariable.TwilioRecipientPhoneNumber}` is not defined.");
+        _twilioSenderPhoneNumber = _secretsService.GetSecret(SecretVariable.TwilioSenderPhoneNumber)
+            ?? throw new ConfigurationErrorsException($"The secret variable `{SecretVariable.TwilioSenderPhoneNumber}` is not defined.");
 
-        var twilioAuthenticationToken = Environment.GetEnvironmentVariable(EnvironmentVariable.TwilioAuthenticationToken)
-            ?? throw new ConfigurationErrorsException($"The environment variable `{EnvironmentVariable.TwilioAuthenticationToken}` is not defined.");
+        _twilioRecipientPhoneNumber = _secretsService.GetSecret(SecretVariable.TwilioRecipientPhoneNumber)
+            ?? throw new ConfigurationErrorsException($"The secret variable `{SecretVariable.TwilioRecipientPhoneNumber}` is not defined.");
+
+        var twilioAuthenticationToken = _secretsService.GetSecret(SecretVariable.TwilioAuthenticationToken)
+            ?? throw new ConfigurationErrorsException($"The secret variable `{SecretVariable.TwilioAuthenticationToken}` is not defined.");
 
         var twilioBasicAuthenticationValue = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_twilioAccountSid}:{twilioAuthenticationToken}"));
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",

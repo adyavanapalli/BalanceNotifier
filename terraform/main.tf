@@ -112,22 +112,11 @@ resource "azurerm_linux_function_app" "linux_function_app" {
     # plan.", so we'll comment this out and its corresponding declaration until
     # it's supported on the Linux Consumption plan.
     # WEBSITE_TIME_ZONE = var.timezone
-
-    # TODO: These environment secrets should ideally be accessed through some
-    # Key Vault resource instead of being supplied here.
-    PLAID_CLIENT_ID           = var.plaid_client_id
-    PLAID_CLIENT_SECRET       = var.plaid_client_secret
-    PLAID_CLIENT_ACCESS_TOKEN = var.plaid_client_access_token
-
-    TWILIO_ACCOUNT_SID            = var.twilio_account_sid
-    TWILIO_AUTHENTICATION_TOKEN   = var.twilio_authentication_token
-    TWILIO_SENDER_PHONE_NUMBER    = var.twilio_sender_phone_number
-    TWILIO_RECIPIENT_PHONE_NUMBER = var.twilio_recipient_phone_number
+  }
+  identity {
+    type = "SystemAssigned"
   }
   # TODO: See TODO[0].
-  # identity {
-  #   type = "SystemAssigned"
-  # }
   # storage_uses_managed_identity = true
   storage_account_access_key = azurerm_storage_account.storage_account.primary_access_key
 }
@@ -139,3 +128,44 @@ resource "azurerm_linux_function_app" "linux_function_app" {
 
 #   role_definition_name = "Storage Blob Data Owner"
 # }
+
+data "azurerm_subscription" "subscription" {}
+
+resource "azurerm_key_vault" "key_vault" {
+  location            = azurerm_resource_group.resource_group.location
+  name                = "kv-${lower(replace(local.common_resource_suffix, "-", ""))}"
+  resource_group_name = azurerm_resource_group.resource_group.name
+  sku_name            = "standard"
+  tenant_id           = data.azurerm_subscription.subscription.tenant_id
+
+  enable_rbac_authorization = true
+  network_acls {
+    bypass         = "AzureServices"
+    default_action = "Deny"
+  }
+}
+
+resource "azurerm_key_vault_secret" "key_vault_secrets" {
+  for_each = {
+    PLAID_CLIENT_ID           = var.plaid_client_id
+    PLAID_CLIENT_SECRET       = var.plaid_client_secret
+    PLAID_CLIENT_ACCESS_TOKEN = var.plaid_client_access_token
+
+    TWILIO_ACCOUNT_SID            = var.twilio_account_sid
+    TWILIO_AUTHENTICATION_TOKEN   = var.twilio_authentication_token
+    TWILIO_SENDER_PHONE_NUMBER    = var.twilio_sender_phone_number
+    TWILIO_RECIPIENT_PHONE_NUMBER = var.twilio_recipient_phone_number
+  }
+
+  content_type = "text/plain"
+  key_vault_id = azurerm_key_vault.key_vault.id
+  name         = each.key
+  value        = each.value
+}
+
+resource "azurerm_role_assignment" "role_assignment" {
+  principal_id = azurerm_linux_function_app.linux_function_app.identity[0].principal_id
+  scope        = azurerm_key_vault.key_vault.id
+
+  role_definition_name = "Key Vault Secrets User"
+}
