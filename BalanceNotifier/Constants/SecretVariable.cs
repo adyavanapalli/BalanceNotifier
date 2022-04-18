@@ -21,14 +21,14 @@ public class SecretVariable
     public const string PlaidClientAccessToken = "PLAID-CLIENT-ACCESS-TOKEN";
 
     /// <summary>
-    /// The name of the secret variable representing a Twilio account SID.
+    /// The name of the secret variable representing a Twilio API key SID.
     /// </summary>
-    public const string TwilioAccountSid = "TWILIO-ACCOUNT-SID";
+    public const string TwilioApiKeySid = "TWILIO-API-KEY-SID";
 
     /// <summary>
-    /// The name of the secret variable representing a Twilio authentication token.
+    /// The name of the secret variable representing a Twilio API key secret.
     /// </summary>
-    public const string TwilioAuthenticationToken = "TWILIO-AUTHENTICATION-TOKEN";
+    public const string TwilioApiKeySecret = "TWILIO-API-KEY-SECRET";
 
     /// <summary>
     /// The name of the secret variable representing the Twilio sender phone number.

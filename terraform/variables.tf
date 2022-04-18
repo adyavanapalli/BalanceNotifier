@@ -29,14 +29,14 @@ variable "plaid_client_access_token" {
   sensitive   = true
 }
 
-variable "twilio_account_sid" {
-  description = "A string identifier (SID) used to identify a specific Twilio SMS API account resource."
+variable "twilio_api_key_sid" {
+  description = "A string identifier (SID) used to identify a Twilio API key."
   type        = string
   sensitive   = true
 }
 
-variable "twilio_authentication_token" {
-  description = "An authentication token used to authenticate calls to the Twilio SMS API."
+variable "twilio_api_key_secret" {
+  description = "A secret associated a Twilio API key used to authenticate calls to its API."
   type        = string
   sensitive   = true
 }
