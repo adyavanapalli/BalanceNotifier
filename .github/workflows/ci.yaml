@@ -79,6 +79,15 @@ jobs:
       ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
 
+      TF_VAR_plaid_client_id: ${{ secrets.TF_VAR_PLAID_CLIENT_ID }}
+      TF_VAR_plaid_client_secret: ${{ secrets.TF_VAR_PLAID_CLIENT_SECRET }}
+      TF_VAR_plaid_client_access_token: ${{ secrets.TF_VAR_PLAID_CLIENT_ACCESS_TOKEN }}
+
+      TF_VAR_twilio_account_sid: ${{ secrets.TF_VAR_TWILIO_ACCOUNT_SID }}
+      TF_VAR_twilio_authentication_token: ${{ secrets.TF_VAR_TWILIO_AUTHENTICATION_TOKEN }}
+      TF_VAR_twilio_sender_phone_number: ${{ secrets.TF_VAR_TWILIO_SENDER_PHONE_NUMBER }}
+      TF_VAR_twilio_recipient_phone_number: ${{ secrets.TF_VAR_TWILIO_RECIPIENT_PHONE_NUMBER }}
+
     environment: Production
     needs: terraform
     runs-on: ubuntu-latest
