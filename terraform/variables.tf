@@ -11,9 +11,6 @@ variable "region" {
 #   type        = string
 # }
 
-// TODO: The following environment secrets should ideally be accessed through
-// some Key Vault resource instead of being supplied here.
-
 variable "plaid_client_id" {
   description = "A Plaid client ID used to identify calls to the Plaid API."
   type        = string

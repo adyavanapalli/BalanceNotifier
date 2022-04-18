@@ -1,4 +1,3 @@
-using System;
 using System.Configuration;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -29,6 +28,11 @@ public class PlaidBankingApiService : IBankingApiService
     };
 
     /// <summary>
+    /// A service used to manage secrets.
+    /// </summary>
+    private readonly ISecretsService _secretsService;
+
+    /// <summary>
     /// A Plaid client ID used to identify calls to the Plaid API.
     /// </summary>
     private readonly string _plaidClientId;
@@ -46,16 +50,19 @@ public class PlaidBankingApiService : IBankingApiService
     /// <summary>
     /// Constructor.
     /// </summary>
-    public PlaidBankingApiService()
+    /// <param name="secretsService">A service used to manage secrets.</param>
+    public PlaidBankingApiService(ISecretsService? secretsService = null)
     {
-        _plaidClientId = Environment.GetEnvironmentVariable(EnvironmentVariable.PlaidClientId)
-            ?? throw new ConfigurationErrorsException($"The environment variable `{EnvironmentVariable.PlaidClientId}` is not defined.");
+        _secretsService = secretsService ?? new KeyVaultSecretsService();
 
-        _plaidClientSecret = Environment.GetEnvironmentVariable(EnvironmentVariable.PlaidClientSecret)
-            ?? throw new ConfigurationErrorsException($"The environment variable `{EnvironmentVariable.PlaidClientSecret}` is not defined.");
+        _plaidClientId = _secretsService.GetSecret(SecretVariable.PlaidClientId)
+            ?? throw new ConfigurationErrorsException($"The secret variable `{SecretVariable.PlaidClientId}` is not defined.");
 
-        _plaidClientAccessToken = Environment.GetEnvironmentVariable(EnvironmentVariable.PlaidClientAccessToken)
-            ?? throw new ConfigurationErrorsException($"The environment variable `{EnvironmentVariable.PlaidClientAccessToken}` is not defined.");
+        _plaidClientSecret = _secretsService.GetSecret(SecretVariable.PlaidClientSecret)
+            ?? throw new ConfigurationErrorsException($"The secret variable `{SecretVariable.PlaidClientSecret}` is not defined.");
+
+        _plaidClientAccessToken = _secretsService.GetSecret(SecretVariable.PlaidClientAccessToken)
+            ?? throw new ConfigurationErrorsException($"The secret variable `{SecretVariable.PlaidClientAccessToken}` is not defined.");
     }
 
     /// <inheritdoc />
