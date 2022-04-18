@@ -139,9 +139,15 @@ resource "azurerm_key_vault" "key_vault" {
   tenant_id           = data.azurerm_subscription.subscription.tenant_id
 
   enable_rbac_authorization = true
+  # TODO: Omitting setting specific network ACLs just yet as I'm not sure I know
+  # how to only allow GitHub Actions to deploy since the outbound IP address
+  # identity is a little tricky to get right.
+  # network_acls {
+  #   bypass         = "AzureServices"
+  #   default_action = "Deny"
+  # }
   network_acls {
-    bypass         = "AzureServices"
-    default_action = "Deny"
+    default_action = "Allow"
   }
   purge_protection_enabled   = true
   soft_delete_retention_days = 90
