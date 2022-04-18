@@ -1,0 +1,12 @@
+{
+  "json.schemas": [
+    {
+      "fileMatch": ["host.json"],
+      "url": "https://json.schemastore.org/host.json"
+    },
+    {
+      "fileMatch": ["local.settings.json"],
+      "url": "https://json.schemastore.org/local.settings.json"
+    }
+  ]
+}
