@@ -143,7 +143,8 @@ resource "azurerm_key_vault" "key_vault" {
     bypass         = "AzureServices"
     default_action = "Deny"
   }
-  purge_protection_enabled = true
+  purge_protection_enabled   = true
+  soft_delete_retention_days = 90
 }
 
 resource "azurerm_key_vault_secret" "key_vault_secrets" {
