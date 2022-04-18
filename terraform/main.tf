@@ -132,6 +132,7 @@ resource "azurerm_linux_function_app" "linux_function_app" {
 data "azurerm_subscription" "subscription" {}
 
 resource "azurerm_key_vault" "key_vault" {
+  #checkov:skip=CKV_AZURE_109: See TODO below above `network_acls` block.
   location            = azurerm_resource_group.resource_group.location
   name                = "kv${lower(replace(local.common_resource_suffix, "-", ""))}"
   resource_group_name = azurerm_resource_group.resource_group.name
@@ -147,6 +148,7 @@ resource "azurerm_key_vault" "key_vault" {
   #   default_action = "Deny"
   # }
   network_acls {
+    #tfsec:ignore:azure-keyvault-specify-network-acl
     default_action = "Allow"
   }
   purge_protection_enabled   = true
