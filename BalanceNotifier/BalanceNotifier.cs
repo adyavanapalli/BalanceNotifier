@@ -19,7 +19,7 @@ public class BalanceNotifier
     /// TODO: Note that this will not be correct when daylight savings is not active.
     /// </para>
     /// </summary>
-    private const string EveryMinute = "0 * * * * *";
+    private const string EverydayAt8AmEt = "0 0 12 * * *";
 
     /// <summary>
     /// A service used for getting banking information via a banking API.
@@ -49,7 +49,7 @@ public class BalanceNotifier
     /// function is triggered.</param>
     /// <param name="logger">A logger object for logging information.</param>
     [FunctionName(nameof(BalanceNotifier))]
-    public async Task Run([TimerTrigger(EveryMinute)] TimerInfo timerInfo, ILogger logger)
+    public async Task Run([TimerTrigger(EverydayAt8AmEt)] TimerInfo timerInfo, ILogger logger)
     {
         logger.LogInformation($"Timer trigger function started execution at: {DateTime.UtcNow}.");
 
