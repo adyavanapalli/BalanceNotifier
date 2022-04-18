@@ -131,10 +131,10 @@ jobs:
                    --tenant "$ARM_TENANT_ID"
 
       - name: Deploy Azure Function App
-        run: func azure functionapp publish ${{ jobs.terraform.outputs.LINUX_FUNCTION_APP_NAME }} --csharp
+        run: func azure functionapp publish ${{ needs.terraform.outputs.LINUX_FUNCTION_APP_NAME }} --csharp
         working-directory: BalanceNotifier
 
       - name: Restart Azure Function App
         run: |
-          az functionapp restart --name ${{ jobs.terraform.outputs.LINUX_FUNCTION_APP_NAME }} \
-                                 --resource-group ${{ jobs.terraform.outputs.RESOURCE_GROUP_NAME }}
+          az functionapp restart --name ${{ needs.terraform.outputs.LINUX_FUNCTION_APP_NAME }} \
+                                 --resource-group ${{ needs.terraform.outputs.RESOURCE_GROUP_NAME }}
