@@ -1,6 +1,8 @@
 using System;
+using System.Configuration;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
+using BalanceNotifier.Constants;
 
 namespace BalanceNotifier.Services;
 
@@ -21,7 +23,12 @@ public class KeyVaultSecretsService : ISecretsService
     /// <param name="secretClient">A secrets client used for managing the secrets store.</param>
     public KeyVaultSecretsService(SecretClient? secretClient = null)
     {
-        _secretClient = secretClient ?? new(new Uri(""), new DefaultAzureCredential());
+        var azureKeyVaultUri = Environment.GetEnvironmentVariable(EnvironmentVariable.AzureKeyVaultUri)
+            ?? throw new ConfigurationErrorsException($"The environment variable `{EnvironmentVariable.AzureKeyVaultUri}` is not defined.");
+
+        var vaultUri = new Uri(azureKeyVaultUri);
+
+        _secretClient = secretClient ?? new(vaultUri, new DefaultAzureCredential());
     }
 
     /// <inheritdoc />
