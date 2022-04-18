@@ -115,3 +115,10 @@ jobs:
         # from terraform output.
         run: func azure functionapp publish func-BalanceNotifier-eastus --csharp
         working-directory: BalanceNotifier
+
+      - name: Restart Azure Function App
+        # TODO: Do not hardcode {func|rg}-BalanceNotifier-eastus and instead get
+        # it from terraform output.
+        run: |
+          az functionapp restart --name func-BalanceNotifier-eastus \
+                                 --resource-group rg-BalanceNotifier-eastus
