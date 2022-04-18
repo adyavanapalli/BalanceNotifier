@@ -105,6 +105,18 @@ resource "azurerm_linux_function_app" "linux_function_app" {
   }
   storage_account_name = azurerm_storage_account.storage_account.name
 
+  // TODO: These environment secrets should ideally be accessed through some Key
+  // Vault resource instead of being supplied here.
+  app_settings = {
+    "PLAID_CLIENT_ID"           = var.plaid_client_id
+    "PLAID_CLIENT_SECRET"       = var.plaid_client_secret
+    "PLAID_CLIENT_ACCESS_TOKEN" = var.plaid_client_access_token
+
+    "TWILIO_ACCOUNT_SID"            = var.twilio_account_sid
+    "TWILIO_AUTHENTICATION_TOKEN"   = var.twilio_authentication_token
+    "TWILIO_SENDER_PHONE_NUMBER"    = var.twilio_sender_phone_number
+    "TWILIO_RECIPIENT_PHONE_NUMBER" = var.twilio_recipient_phone_number
+  }
   # TODO[1]: See TODO[0].
   # identity {
   #   type = "SystemAssigned"
