@@ -4,9 +4,17 @@ concurrency: Production
 on:
   push:
     branches: [main]
+    paths:
+      - ".github/workflows/ci.yaml"
+      - "BalanceNotifier/**"
+      - "terraform/**"
 
   pull_request:
     branches: [main]
+    paths:
+      - ".github/workflows/ci.yaml"
+      - "BalanceNotifier/**"
+      - "terraform/**"
 
   workflow_dispatch:
 
