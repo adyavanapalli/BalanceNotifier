@@ -19,23 +19,23 @@ on:
   workflow_dispatch:
 
 jobs:
-  checkov-scan:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+  # checkov-scan:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
 
-      - name: Checkov Scan
-        uses: bridgecrewio/checkov-action@master
+  #     - name: Checkov Scan
+  #       uses: bridgecrewio/checkov-action@master
 
-  tfsec-scan:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+  # tfsec-scan:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
 
-      - name: TFSec Scan
-        run: docker run --interactive --volume "$(pwd):/src" --rm aquasec/tfsec-scratch /src
+  #     - name: TFSec Scan
+  #       run: docker run --interactive --volume "$(pwd):/src" --rm aquasec/tfsec-scratch /src
 
   terraform:
     env:
@@ -54,9 +54,9 @@ jobs:
       TF_VAR_twilio_recipient_phone_number: ${{ secrets.TF_VAR_TWILIO_RECIPIENT_PHONE_NUMBER }}
 
     environment: Production
-    needs:
-      - checkov-scan
-      - tfsec-scan
+    # needs:
+    #   - checkov-scan
+    #   - tfsec-scan
 
     runs-on: ubuntu-latest
     steps:
@@ -81,52 +81,62 @@ jobs:
         working-directory: terraform
 
       - name: Terraform Plan
+        id: plan
         run: terraform plan -input=false -out plan
         working-directory: terraform
 
       - name: Terraform Apply
+        id: apply
         if: github.ref == 'refs/heads/main'
         run: terraform apply -input=false -auto-approve "plan"
         working-directory: terraform
 
-  deploy:
-    env:
-      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+      - run: echo ${{ steps.plan.outputs.stdout }}
+      - run: echo ${{ steps.plan.outputs.stderr }}
+      - run: echo ${{ steps.plan.outputs.exitcode }}
 
-    environment: Production
-    needs: terraform
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - run: echo ${{ steps.apply.outputs.stdout }}
+      - run: echo ${{ steps.apply.outputs.stderr }}
+      - run: echo ${{ steps.apply.outputs.exitcode }}
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v2
-        with:
-          dotnet-version: '6.0.x'
+  # deploy:
+  #   env:
+  #     ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+  #     ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+  #     ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+  #     ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
 
-      - name: Setup Azure Function Core Tools
-        run: npm install --global azure-functions-core-tools@4 --unsafe-perm true
+  #   environment: Production
+  #   needs: terraform
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
 
-      - name: Azure Login
-        run: |
-          az login --service-principal \
-                   --username "$ARM_CLIENT_ID" \
-                   --password "$ARM_CLIENT_SECRET" \
-                   --tenant "$ARM_TENANT_ID"
+  #     - name: Setup .NET
+  #       uses: actions/setup-dotnet@v2
+  #       with:
+  #         dotnet-version: '6.0.x'
 
-      - name: Deploy Azure Function App
-        # TODO: Do not hardcode func-BalanceNotifier-eastus and instead get it
-        # from terraform output.
-        run: func azure functionapp publish func-BalanceNotifier-eastus --csharp
-        working-directory: BalanceNotifier
+  #     - name: Setup Azure Function Core Tools
+  #       run: npm install --global azure-functions-core-tools@4 --unsafe-perm true
 
-      - name: Restart Azure Function App
-        # TODO: Do not hardcode {func|rg}-BalanceNotifier-eastus and instead get
-        # it from terraform output.
-        run: |
-          az functionapp restart --name func-BalanceNotifier-eastus \
-                                 --resource-group rg-BalanceNotifier-eastus
+  #     - name: Azure Login
+  #       run: |
+  #         az login --service-principal \
+  #                  --username "$ARM_CLIENT_ID" \
+  #                  --password "$ARM_CLIENT_SECRET" \
+  #                  --tenant "$ARM_TENANT_ID"
+
+  #     - name: Deploy Azure Function App
+  #       # TODO: Do not hardcode func-BalanceNotifier-eastus and instead get it
+  #       # from terraform output.
+  #       run: func azure functionapp publish func-BalanceNotifier-eastus --csharp
+  #       working-directory: BalanceNotifier
+
+  #     - name: Restart Azure Function App
+  #       # TODO: Do not hardcode {func|rg}-BalanceNotifier-eastus and instead get
+  #       # it from terraform output.
+  #       run: |
+  #         az functionapp restart --name func-BalanceNotifier-eastus \
+  #                                --resource-group rg-BalanceNotifier-eastus
