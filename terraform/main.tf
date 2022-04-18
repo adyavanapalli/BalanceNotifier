@@ -166,8 +166,17 @@ resource "azurerm_key_vault_secret" "key_vault_secrets" {
   value           = each.value
 }
 
+data "azurerm_linux_function_app" "linux_function_app" {
+  name                = azurerm_linux_function_app.linux_function_app.name
+  resource_group_name = azurerm_linux_function_app.linux_function_app.resource_group_name
+}
+
 resource "azurerm_role_assignment" "role_assignment" {
-  principal_id = azurerm_linux_function_app.linux_function_app.identity[0].principal_id
+  // There's a bug with the azurerm provider where the
+  // `azurerm_linux_function_app.linux_function_app.identity` block doesn't
+  // exist even after the resource is created, so we explicitly query it using
+  // Terraform data sources instead.
+  principal_id = data.azurerm_linux_function_app.linux_function_app.identity[0].principal_id
   scope        = azurerm_key_vault.key_vault.id
 
   role_definition_name = "Key Vault Secrets User"
