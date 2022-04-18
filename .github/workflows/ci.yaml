@@ -85,6 +85,7 @@ jobs:
         working-directory: terraform
 
       - name: Terraform Apply
+        id: apply
         if: github.ref == 'refs/heads/main'
         run: terraform apply -input=false -auto-approve "plan"
         working-directory: terraform
@@ -94,6 +95,7 @@ jobs:
         run: |
           echo "::set-output name=LINUX_FUNCTION_APP_NAME::$(terraform output -raw linux_function_app_name)"
           echo "::set-output name=RESOURCE_GROUP_NAME::$(terraform output -raw resource_group_name)"
+        working-directory: terraform
 
       - run: echo "${{ steps.output.LINUX_FUNCTION_APP_NAME }}"
       - run: echo "${{ steps.output.RESOURCE_GROUP_NAME }}"
