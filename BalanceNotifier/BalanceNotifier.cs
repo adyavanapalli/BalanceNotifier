@@ -15,8 +15,12 @@ public class BalanceNotifier
 {
     /// <summary>
     /// A NCRON expression for everyday at 8 AM ET.
+    /// <para>
+    /// TODO: Note that this will not be correct when daylight savings is not active. Also note that there is an
+    /// existing TODO to fix this at TODO[1] in main.tf.
+    /// </para>
     /// </summary>
-    private const string EverydayAt8AmEt = "0 0 8 * * *";
+    private const string EverydayAt8AmEt = "0 0 12 * * *";
 
     /// <summary>
     /// A service used for getting banking information via a banking API.

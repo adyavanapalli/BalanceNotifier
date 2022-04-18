@@ -17,7 +17,7 @@ terraform {
 provider "azurerm" {
   features {}
 
-  # TODO[2]: See TODO[0].
+  # TODO: See TODO[0].
   # storage_use_azuread = true
 }
 
@@ -48,10 +48,10 @@ resource "azurerm_storage_account" "storage_account" {
   enable_https_traffic_only       = true
   min_tls_version                 = "TLS1_2"
 
-  # TODO[5]: Omitting setting specific network rules just yet as allowing
-  # specific IPs seems to bypass the uploading restriction fine, but syncing
-  # triggers fails. We need to fix this by likely allow Azure services to access
-  # the storage account, which presumably should already be allowed 🤔.
+  # TODO: Omitting setting specific network rules just yet as allowing specific
+  # IPs seems to bypass the uploading restriction fine, but syncing triggers
+  # fails. We need to fix this by likely allow Azure services to access the
+  # storage account, which presumably should already be allowed 🤔.
   # network_rules {
   #   bypass         = ["AzureServices"]
   #   default_action = "Deny"
@@ -81,9 +81,9 @@ resource "azurerm_service_plan" "service_plan" {
   sku_name            = "Y1"
 }
 
-// TODO[4]: We should figure out if this resource should be eventually removed
-// after the application is working correctly. It might be useful to have it
-// forever, but time will tell...
+# TODO: We should figure out if this resource should be eventually removed after
+# the application is working correctly. It might be useful to have it forever,
+# but time will tell...
 resource "azurerm_application_insights" "application_insights" {
   application_type    = "web"
   location            = azurerm_resource_group.resource_group.location
@@ -106,10 +106,15 @@ resource "azurerm_linux_function_app" "linux_function_app" {
   storage_account_name = azurerm_storage_account.storage_account.name
 
   app_settings = {
-    WEBSITE_TIME_ZONE = var.timezone
+    # TODO[1]: According to [Timer trigger for Azure
+    # Functions](https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer?tabs=in-process&pivots=programming-language-csharp#ncrontab-time-zones):
+    # "WEBSITE_TIME_ZONE is not currently supported on the Linux Consumption
+    # plan.", so we'll comment this out and its corresponding declaration until
+    # it's supported on the Linux Consumption plan.
+    # WEBSITE_TIME_ZONE = var.timezone
 
-    // TODO: These environment secrets should ideally be accessed through some Key
-    // Vault resource instead of being supplied here.
+    # TODO: These environment secrets should ideally be accessed through some
+    # Key Vault resource instead of being supplied here.
     PLAID_CLIENT_ID           = var.plaid_client_id
     PLAID_CLIENT_SECRET       = var.plaid_client_secret
     PLAID_CLIENT_ACCESS_TOKEN = var.plaid_client_access_token
@@ -119,7 +124,7 @@ resource "azurerm_linux_function_app" "linux_function_app" {
     TWILIO_SENDER_PHONE_NUMBER    = var.twilio_sender_phone_number
     TWILIO_RECIPIENT_PHONE_NUMBER = var.twilio_recipient_phone_number
   }
-  # TODO[1]: See TODO[0].
+  # TODO: See TODO[0].
   # identity {
   #   type = "SystemAssigned"
   # }
@@ -127,7 +132,7 @@ resource "azurerm_linux_function_app" "linux_function_app" {
   storage_account_access_key = azurerm_storage_account.storage_account.primary_access_key
 }
 
-# TODO[3]: See TODO[0].
+# TODO: See TODO[0].
 # resource "azurerm_role_assignment" "role_assignment" {
 #   principal_id = azurerm_linux_function_app.linux_function_app.identity[0].principal_id
 #   scope        = azurerm_storage_account.storage_account.id
