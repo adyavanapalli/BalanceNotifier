@@ -67,7 +67,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
-          terraform_wrapper: false
+          # terraform_wrapper: false
 
       - name: Terraform Format
         run: terraform fmt -check -recursive
@@ -86,19 +86,23 @@ jobs:
         working-directory: terraform
 
       - name: Terraform Apply
+        id: tf-apply
         if: github.ref == 'refs/heads/main'
         run: terraform apply -input=false -auto-approve "plan"
         working-directory: terraform
 
-      - name: Terraform Output
-        id: tf-output
-        run: |
-          echo "::set-output name=LINUX_FUNCTION_APP_NAME::$(terraform output -raw linux_function_app_name)"
-          echo "::set-output name=RESOURCE_GROUP_NAME::$(terraform output -raw resource_group_name)"
-        working-directory: terraform
+      # - name: Terraform Output
+      #   id: tf-output
+      #   run: |
+      #     echo "::set-output name=LINUX_FUNCTION_APP_NAME::$(terraform output -raw linux_function_app_name)"
+      #     echo "::set-output name=RESOURCE_GROUP_NAME::$(terraform output -raw resource_group_name)"
+      #   working-directory: terraform
 
-      - run: echo "${{ steps.tf-output.outputs.LINUX_FUNCTION_APP_NAME }}"
-      - run: echo "${{ steps.tf-output.outputs.RESOURCE_GROUP_NAME }}"
+      # - run: echo "${{ steps.tf-output.outputs.LINUX_FUNCTION_APP_NAME }}"
+      # - run: echo "${{ steps.tf-output.outputs.RESOURCE_GROUP_NAME }}"
+
+      - run: echo "${{ steps.tf-apply.outputs.linux_function_app_name }}"
+      - run: echo "${{ steps.tf-apply.outputs.resource_group_name }}"
 
   # deploy:
   #   env:
