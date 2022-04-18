@@ -19,23 +19,23 @@ on:
   workflow_dispatch:
 
 jobs:
-  # checkov-scan:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
+  checkov-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
 
-  #     - name: Checkov Scan
-  #       uses: bridgecrewio/checkov-action@master
+      - name: Checkov Scan
+        uses: bridgecrewio/checkov-action@master
 
-  # tfsec-scan:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
+  tfsec-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
 
-  #     - name: TFSec Scan
-  #       run: docker run --interactive --volume "$(pwd):/src" --rm aquasec/tfsec-scratch /src
+      - name: TFSec Scan
+        run: docker run --interactive --volume "$(pwd):/src" --rm aquasec/tfsec-scratch /src
 
   terraform:
     env:
@@ -54,9 +54,13 @@ jobs:
       TF_VAR_twilio_recipient_phone_number: ${{ secrets.TF_VAR_TWILIO_RECIPIENT_PHONE_NUMBER }}
 
     environment: Production
-    # needs:
-    #   - checkov-scan
-    #   - tfsec-scan
+    needs:
+      - checkov-scan
+      - tfsec-scan
+    
+    outputs:
+      LINUX_FUNCTION_APP_NAME: ${{ steps.tf-output.outputs.LINUX_FUNCTION_APP_NAME }}
+      RESOURCE_GROUP_NAME: ${{ steps.tf-output.outputs.RESOURCE_GROUP_NAME }}
 
     runs-on: ubuntu-latest
     steps:
@@ -67,7 +71,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
-          # terraform_wrapper: false
+          terraform_wrapper: false
 
       - name: Terraform Format
         run: terraform fmt -check -recursive
@@ -86,62 +90,51 @@ jobs:
         working-directory: terraform
 
       - name: Terraform Apply
-        id: tf-apply
         if: github.ref == 'refs/heads/main'
         run: terraform apply -input=false -auto-approve "plan"
         working-directory: terraform
 
-      # - name: Terraform Output
-      #   id: tf-output
-      #   run: |
-      #     echo "::set-output name=LINUX_FUNCTION_APP_NAME::$(terraform output -raw linux_function_app_name)"
-      #     echo "::set-output name=RESOURCE_GROUP_NAME::$(terraform output -raw resource_group_name)"
-      #   working-directory: terraform
+      - name: Set Terraform Outputs
+        id: tf-output
+        run: |
+          echo "::set-output name=LINUX_FUNCTION_APP_NAME::$(terraform output -raw linux_function_app_name)"
+          echo "::set-output name=RESOURCE_GROUP_NAME::$(terraform output -raw resource_group_name)"
+        working-directory: terraform
 
-      # - run: echo "${{ steps.tf-output.outputs.LINUX_FUNCTION_APP_NAME }}"
-      # - run: echo "${{ steps.tf-output.outputs.RESOURCE_GROUP_NAME }}"
+  deploy:
+    env:
+      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
 
-      - run: echo "${{ steps.tf-apply.outputs.linux_function_app_name }}"
-      - run: echo "${{ steps.tf-apply.outputs.resource_group_name }}"
+    environment: Production
+    needs: terraform
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
 
-  # deploy:
-  #   env:
-  #     ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-  #     ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-  #     ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-  #     ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '6.0.x'
 
-  #   environment: Production
-  #   needs: terraform
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
+      - name: Setup Azure Function Core Tools
+        run: npm install --global azure-functions-core-tools@4 --unsafe-perm true
 
-  #     - name: Setup .NET
-  #       uses: actions/setup-dotnet@v2
-  #       with:
-  #         dotnet-version: '6.0.x'
+      - name: Azure Login
+        run: |
+          az login --service-principal \
+                   --username "$ARM_CLIENT_ID" \
+                   --password "$ARM_CLIENT_SECRET" \
+                   --tenant "$ARM_TENANT_ID"
 
-  #     - name: Setup Azure Function Core Tools
-  #       run: npm install --global azure-functions-core-tools@4 --unsafe-perm true
+      - name: Deploy Azure Function App
+        run: func azure functionapp publish ${{ jobs.terraform.outputs.LINUX_FUNCTION_APP_NAME }} --csharp
+        working-directory: BalanceNotifier
 
-  #     - name: Azure Login
-  #       run: |
-  #         az login --service-principal \
-  #                  --username "$ARM_CLIENT_ID" \
-  #                  --password "$ARM_CLIENT_SECRET" \
-  #                  --tenant "$ARM_TENANT_ID"
-
-  #     - name: Deploy Azure Function App
-  #       # TODO: Do not hardcode func-BalanceNotifier-eastus and instead get it
-  #       # from terraform output.
-  #       run: func azure functionapp publish func-BalanceNotifier-eastus --csharp
-  #       working-directory: BalanceNotifier
-
-  #     - name: Restart Azure Function App
-  #       # TODO: Do not hardcode {func|rg}-BalanceNotifier-eastus and instead get
-  #       # it from terraform output.
-  #       run: |
-  #         az functionapp restart --name func-BalanceNotifier-eastus \
-  #                                --resource-group rg-BalanceNotifier-eastus
+      - name: Restart Azure Function App
+        run: |
+          az functionapp restart --name ${{ jobs.terraform.outputs.LINUX_FUNCTION_APP_NAME }} \
+                                 --resource-group ${{ jobs.terraform.outputs.RESOURCE_GROUP_NAME }}
