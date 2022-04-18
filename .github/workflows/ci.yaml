@@ -64,12 +64,12 @@ jobs:
         working-directory: terraform
 
       - name: Terraform Plan
-        run: terraform plan -out plan
+        run: terraform plan -input=false -out plan
         working-directory: terraform
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
-        run: terraform apply -auto-approve "plan"
+        run: terraform apply -input=false -auto-approve "plan"
         working-directory: terraform
 
   deploy:
