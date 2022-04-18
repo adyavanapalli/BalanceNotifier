@@ -112,6 +112,8 @@ resource "azurerm_linux_function_app" "linux_function_app" {
     # plan.", so we'll comment this out and its corresponding declaration until
     # it's supported on the Linux Consumption plan.
     # WEBSITE_TIME_ZONE = var.timezone
+
+    AZURE_KEY_VAULT_URI = azurerm_key_vault.key_vault.vault_uri
   }
   identity {
     type = "SystemAssigned"
