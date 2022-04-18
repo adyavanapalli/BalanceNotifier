@@ -15,11 +15,8 @@ public class BalanceNotifier
 {
     /// <summary>
     /// A NCRON expression for everyday at 8 AM ET.
-    /// <para>
-    /// TODO: Note that this will not be correct when daylight savings is not active.
-    /// </para>
     /// </summary>
-    private const string EverydayAt8AmEt = "0 0 12 * * *";
+    private const string EverydayAt8AmEt = "0 0 8 * * *";
 
     /// <summary>
     /// A service used for getting banking information via a banking API.

@@ -4,6 +4,12 @@ variable "region" {
   type        = string
 }
 
+variable "timezone" {
+  default     = "America/New_York"
+  description = "The tz database timezone that the Azure Function App should use."
+  type        = string
+}
+
 // TODO: The following environment secrets should ideally be accessed through
 // some Key Vault resource instead of being supplied here.
 
