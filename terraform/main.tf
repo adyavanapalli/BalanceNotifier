@@ -133,7 +133,7 @@ data "azurerm_subscription" "subscription" {}
 
 resource "azurerm_key_vault" "key_vault" {
   location            = azurerm_resource_group.resource_group.location
-  name                = "kv-${lower(replace(local.common_resource_suffix, "-", ""))}"
+  name                = "kv${lower(replace(local.common_resource_suffix, "-", ""))}"
   resource_group_name = azurerm_resource_group.resource_group.name
   sku_name            = "standard"
   tenant_id           = data.azurerm_subscription.subscription.tenant_id
