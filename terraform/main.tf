@@ -149,14 +149,14 @@ resource "azurerm_key_vault" "key_vault" {
 
 resource "azurerm_key_vault_secret" "key_vault_secrets" {
   for_each = {
-    PLAID_CLIENT_ID           = var.plaid_client_id
-    PLAID_CLIENT_SECRET       = var.plaid_client_secret
-    PLAID_CLIENT_ACCESS_TOKEN = var.plaid_client_access_token
+    PLAID-CLIENT-ID           = var.plaid_client_id
+    PLAID-CLIENT-SECRET       = var.plaid_client_secret
+    PLAID-CLIENT-ACCESS-TOKEN = var.plaid_client_access_token
 
-    TWILIO_ACCOUNT_SID            = var.twilio_account_sid
-    TWILIO_AUTHENTICATION_TOKEN   = var.twilio_authentication_token
-    TWILIO_SENDER_PHONE_NUMBER    = var.twilio_sender_phone_number
-    TWILIO_RECIPIENT_PHONE_NUMBER = var.twilio_recipient_phone_number
+    TWILIO-ACCOUNT-SID            = var.twilio_account_sid
+    TWILIO-AUTHENTICATION-TOKEN   = var.twilio_authentication_token
+    TWILIO-SENDER-PHONE-NUMBER    = var.twilio_sender_phone_number
+    TWILIO-RECIPIENT-PHONE-NUMBER = var.twilio_recipient_phone_number
   }
 
   content_type    = "text/plain"
