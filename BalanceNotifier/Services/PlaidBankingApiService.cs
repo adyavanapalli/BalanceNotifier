@@ -1,3 +1,4 @@
+using System;
 using System.Configuration;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -22,10 +23,7 @@ public class PlaidBankingApiService : IBankingApiService
     /// <summary>
     /// An HTTP client for making HTTP requests.
     /// </summary>
-    private static readonly HttpClient _httpClient = new()
-    {
-        BaseAddress = new(BASE_URL)
-    };
+    private readonly HttpClient _httpClient;
 
     /// <summary>
     /// A service used to manage secrets.
@@ -50,10 +48,14 @@ public class PlaidBankingApiService : IBankingApiService
     /// <summary>
     /// Constructor.
     /// </summary>
+    /// <param name="httpClient">An HTTP client for making HTTP requests.</param>
     /// <param name="secretsService">A service used to manage secrets.</param>
-    public PlaidBankingApiService(ISecretsService? secretsService = null)
+    public PlaidBankingApiService(HttpClient httpClient, ISecretsService secretsService)
     {
-        _secretsService = secretsService ?? new KeyVaultSecretsService();
+        _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+        _secretsService = secretsService ?? throw new ArgumentNullException(nameof(secretsService));
+
+        _httpClient.BaseAddress = new(BASE_URL);
 
         _plaidClientId = _secretsService.GetSecret(SecretVariable.PlaidClientId)
             ?? throw new ConfigurationErrorsException($"The secret variable `{SecretVariable.PlaidClientId}` is not defined.");

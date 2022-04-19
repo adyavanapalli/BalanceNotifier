@@ -21,14 +21,12 @@ public class KeyVaultSecretsService : ISecretsService
     /// Constructor.
     /// </summary>
     /// <param name="secretClient">A secrets client used for managing the secrets store.</param>
-    public KeyVaultSecretsService(SecretClient? secretClient = null)
+    public KeyVaultSecretsService()
     {
         var azureKeyVaultUri = Environment.GetEnvironmentVariable(EnvironmentVariable.AzureKeyVaultUri)
             ?? throw new ConfigurationErrorsException($"The environment variable `{EnvironmentVariable.AzureKeyVaultUri}` is not defined.");
 
-        var vaultUri = new Uri(azureKeyVaultUri);
-
-        _secretClient = secretClient ?? new(vaultUri, new DefaultAzureCredential());
+        _secretClient = new(new(azureKeyVaultUri), new DefaultAzureCredential());
     }
 
     /// <inheritdoc />

@@ -37,10 +37,10 @@ public class BalanceNotifier
     /// </summary>
     /// <param name="bankingApiService">A service used for getting banking information via a banking API.</param>
     /// <param name="smsApiService">A service used for sending SMS messages via an SMS API.</param>
-    public BalanceNotifier(IBankingApiService? bankingApiService = null, ISmsApiService? smsApiService = null)
+    public BalanceNotifier(IBankingApiService bankingApiService, ISmsApiService smsApiService)
     {
-        _bankingApiService = bankingApiService ?? new PlaidBankingApiService();
-        _smsApiService = smsApiService ?? new TwilioSmsApiService();
+        _bankingApiService = bankingApiService ?? throw new ArgumentNullException(nameof(bankingApiService));
+        _smsApiService = smsApiService ?? throw new ArgumentNullException(nameof(smsApiService));
     }
 
     /// <summary>
