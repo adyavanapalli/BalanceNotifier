@@ -6,6 +6,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using BalanceNotifier.Constants;
+using Microsoft.Extensions.Logging;
 
 namespace BalanceNotifier.Services;
 
@@ -34,6 +35,11 @@ public class TwilioSmsApiService : ISmsApiService
     private readonly HttpClient _httpClient;
 
     /// <summary>
+    /// A logger used for logging information.
+    /// </summary>
+    private readonly ILogger<TwilioSmsApiService> _logger;
+
+    /// <summary>
     /// A service used to manage secrets.
     /// </summary>
     private readonly ISecretsService _secretsService;
@@ -57,10 +63,14 @@ public class TwilioSmsApiService : ISmsApiService
     /// Constructor.
     /// </summary>
     /// <param name="httpClient">An HTTP client for making HTTP requests.</param>
+    /// <param name="logger">A logger used for logging information.</param>
     /// <param name="secretsService">A service used to manage secrets.</param>
-    public TwilioSmsApiService(HttpClient httpClient, ISecretsService secretsService)
+    public TwilioSmsApiService(HttpClient httpClient,
+                               ILogger<TwilioSmsApiService> logger,
+                               ISecretsService secretsService)
     {
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _secretsService = secretsService ?? throw new ArgumentNullException(nameof(secretsService));
 
         _httpClient.BaseAddress = new(BASE_URL);
@@ -80,6 +90,8 @@ public class TwilioSmsApiService : ISmsApiService
         var twilioBasicAuthenticationValue = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_twilioApiKeySid}:{twilioApiKeySecret}"));
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
                                                                                         twilioBasicAuthenticationValue);
+
+        _logger.LogInformation($"{nameof(TwilioSmsApiService)}: Exiting constructor.");
     }
 
     /// <inheritdoc />

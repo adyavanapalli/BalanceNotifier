@@ -28,6 +28,11 @@ public class BalanceNotifier
     private readonly IBankingApiService _bankingApiService;
 
     /// <summary>
+    /// A logger used for logging information.
+    /// </summary>
+    private readonly ILogger<BalanceNotifier> _logger;
+
+    /// <summary>
     /// A service used for sending SMS messages via an SMS API.
     /// </summary>
     private readonly ISmsApiService _smsApiService;
@@ -37,10 +42,15 @@ public class BalanceNotifier
     /// </summary>
     /// <param name="bankingApiService">A service used for getting banking information via a banking API.</param>
     /// <param name="smsApiService">A service used for sending SMS messages via an SMS API.</param>
-    public BalanceNotifier(IBankingApiService bankingApiService, ISmsApiService smsApiService)
+    public BalanceNotifier(IBankingApiService bankingApiService,
+                           ILogger<BalanceNotifier> logger,
+                           ISmsApiService smsApiService)
     {
         _bankingApiService = bankingApiService ?? throw new ArgumentNullException(nameof(bankingApiService));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _smsApiService = smsApiService ?? throw new ArgumentNullException(nameof(smsApiService));
+
+        _logger.LogInformation($"{nameof(BalanceNotifier)}: Exiting constructor.");
     }
 
     /// <summary>
@@ -50,9 +60,9 @@ public class BalanceNotifier
     /// function is triggered.</param>
     /// <param name="logger">A logger object for logging information.</param>
     [FunctionName(nameof(BalanceNotifier))]
-    public async Task Run([TimerTrigger(EverydayAt8AmEt)] TimerInfo timerInfo, ILogger logger)
+    public async Task Run([TimerTrigger(EveryMinute)] TimerInfo timerInfo)
     {
-        logger.LogInformation($"Timer trigger function started execution at: {DateTime.UtcNow}.");
+        _logger.LogInformation($"Timer trigger function started execution at: {DateTime.UtcNow}.");
 
         var container = await _bankingApiService.GetAccountBalancesAsync();
 
