@@ -45,9 +45,9 @@ public class TwilioSmsApiService : ISmsApiService
     private readonly ISecretsService _secretsService;
 
     /// <summary>
-    /// A string identifier (SID) used to identify a Twilio API key.
+    /// A string identifier (SID) used to identify a Twilio API account.
     /// </summary>
-    private readonly string _twilioApiKeySid;
+    private readonly string _twilioAccountSid;
 
     /// <summary>
     /// The phone number of the Twilio SMS sender.
@@ -75,8 +75,8 @@ public class TwilioSmsApiService : ISmsApiService
 
         _httpClient.BaseAddress = new(BASE_URL);
 
-        _twilioApiKeySid = _secretsService.GetSecret(SecretVariable.TwilioApiKeySid)
-            ?? throw new ConfigurationErrorsException($"The secret variable `{SecretVariable.TwilioApiKeySid}` is not defined.");
+        _twilioAccountSid = _secretsService.GetSecret(SecretVariable.TwilioAccountSid)
+            ?? throw new ConfigurationErrorsException($"The secret variable `{SecretVariable.TwilioAccountSid}` is not defined.");
 
         _twilioSenderPhoneNumber = _secretsService.GetSecret(SecretVariable.TwilioSenderPhoneNumber)
             ?? throw new ConfigurationErrorsException($"The secret variable `{SecretVariable.TwilioSenderPhoneNumber}` is not defined.");
@@ -84,10 +84,13 @@ public class TwilioSmsApiService : ISmsApiService
         _twilioRecipientPhoneNumber = _secretsService.GetSecret(SecretVariable.TwilioRecipientPhoneNumber)
             ?? throw new ConfigurationErrorsException($"The secret variable `{SecretVariable.TwilioRecipientPhoneNumber}` is not defined.");
 
+        var twilioApiKeySid = _secretsService.GetSecret(SecretVariable.TwilioApiKeySid)
+            ?? throw new ConfigurationErrorsException($"The secret variable `{SecretVariable.TwilioApiKeySid}` is not defined.");
+
         var twilioApiKeySecret = _secretsService.GetSecret(SecretVariable.TwilioApiKeySecret)
             ?? throw new ConfigurationErrorsException($"The secret variable `{SecretVariable.TwilioApiKeySecret}` is not defined.");
 
-        var twilioBasicAuthenticationValue = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_twilioApiKeySid}:{twilioApiKeySecret}"));
+        var twilioBasicAuthenticationValue = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{twilioApiKeySid}:{twilioApiKeySecret}"));
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
                                                                                         twilioBasicAuthenticationValue);
 
@@ -99,7 +102,7 @@ public class TwilioSmsApiService : ISmsApiService
     /// failure, resend the request.
     public async Task SendMessageAsync(string body)
     {
-        var response = await _httpClient.PostAsync($"{API_VERSION}/Accounts/{_twilioApiKeySid}/Messages.json",
+        var response = await _httpClient.PostAsync($"{API_VERSION}/Accounts/{_twilioAccountSid}/Messages.json",
                                                    new FormUrlEncodedContent(new List<KeyValuePair<string, string>>
                                                                              {
                                                                                  new("Body", body),
