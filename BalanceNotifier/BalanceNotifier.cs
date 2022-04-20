@@ -20,7 +20,7 @@ public class BalanceNotifier
     /// existing TODO to fix this at TODO[1] in main.tf.
     /// </para>
     /// </summary>
-    private const string EveryMinute = "0 * * * * *";
+    private const string EveryDayAt8AmEt = "0 0 12 * * *";
 
     /// <summary>
     /// A service used for getting banking information via a banking API.
@@ -60,7 +60,7 @@ public class BalanceNotifier
     /// function is triggered.</param>
     /// <param name="logger">A logger object for logging information.</param>
     [FunctionName(nameof(BalanceNotifier))]
-    public async Task Run([TimerTrigger(EveryMinute)] TimerInfo timerInfo)
+    public async Task Run([TimerTrigger(EveryDayAt8AmEt)] TimerInfo timerInfo)
     {
         _logger.LogInformation("{Source}: Timer trigger function started execution at: {UtcNow}.",
                                nameof(Run),
