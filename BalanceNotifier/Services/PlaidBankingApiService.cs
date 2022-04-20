@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using BalanceNotifier.Constants;
 using BalanceNotifier.Models.Banking;
+using Microsoft.Extensions.Logging;
 
 namespace BalanceNotifier.Services;
 
@@ -24,6 +25,11 @@ public class PlaidBankingApiService : IBankingApiService
     /// An HTTP client for making HTTP requests.
     /// </summary>
     private readonly HttpClient _httpClient;
+
+    /// <summary>
+    /// A logger used for logging information.
+    /// </summary>
+    private readonly ILogger<PlaidBankingApiService> _logger;
 
     /// <summary>
     /// A service used to manage secrets.
@@ -49,10 +55,14 @@ public class PlaidBankingApiService : IBankingApiService
     /// Constructor.
     /// </summary>
     /// <param name="httpClient">An HTTP client for making HTTP requests.</param>
+    /// <param name="logger">A logger used for logging information.</param>
     /// <param name="secretsService">A service used to manage secrets.</param>
-    public PlaidBankingApiService(HttpClient httpClient, ISecretsService secretsService)
+    public PlaidBankingApiService(HttpClient httpClient,
+                                  ILogger<PlaidBankingApiService> logger,
+                                  ISecretsService secretsService)
     {
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _secretsService = secretsService ?? throw new ArgumentNullException(nameof(secretsService));
 
         _httpClient.BaseAddress = new(BASE_URL);
@@ -65,6 +75,8 @@ public class PlaidBankingApiService : IBankingApiService
 
         _plaidClientAccessToken = _secretsService.GetSecret(SecretVariable.PlaidClientAccessToken)
             ?? throw new ConfigurationErrorsException($"The secret variable `{SecretVariable.PlaidClientAccessToken}` is not defined.");
+
+        _logger.LogInformation($"{nameof(PlaidBankingApiService)}: Exiting constructor.");
     }
 
     /// <inheritdoc />
