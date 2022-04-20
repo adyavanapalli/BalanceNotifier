@@ -48,6 +48,7 @@ jobs:
       TF_VAR_plaid_client_secret: ${{ secrets.TF_VAR_PLAID_CLIENT_SECRET }}
       TF_VAR_plaid_client_access_token: ${{ secrets.TF_VAR_PLAID_CLIENT_ACCESS_TOKEN }}
 
+      TF_VAR_twilio_account_sid: ${{ secrets.TF_VAR_TWILIO_ACCOUNT_SID }}
       TF_VAR_twilio_api_key_sid: ${{ secrets.TF_VAR_TWILIO_API_KEY_SID }}
       TF_VAR_twilio_api_key_secret: ${{ secrets.TF_VAR_TWILIO_API_KEY_SECRET }}
       TF_VAR_twilio_sender_phone_number: ${{ secrets.TF_VAR_TWILIO_SENDER_PHONE_NUMBER }}
