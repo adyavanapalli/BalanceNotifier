@@ -94,7 +94,7 @@ public class TwilioSmsApiService : ISmsApiService
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
                                                                                         twilioBasicAuthenticationValue);
 
-        _logger.LogInformation($"{nameof(TwilioSmsApiService)}: Exiting constructor.");
+        _logger.LogInformation("{Source}: Exiting constructor.", nameof(TwilioSmsApiService));
     }
 
     /// <inheritdoc />
@@ -102,6 +102,8 @@ public class TwilioSmsApiService : ISmsApiService
     /// failure, resend the request.
     public async Task SendMessageAsync(string body)
     {
+        _logger.LogInformation("{Source}: Attempting to send a text message.", nameof(SendMessageAsync));
+
         var response = await _httpClient.PostAsync($"{API_VERSION}/Accounts/{_twilioAccountSid}/Messages.json",
                                                    new FormUrlEncodedContent(new List<KeyValuePair<string, string>>
                                                                              {
@@ -109,6 +111,12 @@ public class TwilioSmsApiService : ISmsApiService
                                                                                  new("From", _twilioSenderPhoneNumber),
                                                                                  new("To", _twilioRecipientPhoneNumber)
                                                                              }));
+
+        _logger.LogInformation("{Source}: The response returned with status code `{StatusCode}` and reason `{ReasonPhrase}`.",
+                               nameof(SendMessageAsync),
+                               response.StatusCode,
+                               response.ReasonPhrase);
+
         response.EnsureSuccessStatusCode();
     }
 }

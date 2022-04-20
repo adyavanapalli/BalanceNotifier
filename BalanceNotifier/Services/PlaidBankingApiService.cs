@@ -76,7 +76,7 @@ public class PlaidBankingApiService : IBankingApiService
         _plaidClientAccessToken = _secretsService.GetSecret(SecretVariable.PlaidClientAccessToken)
             ?? throw new ConfigurationErrorsException($"The secret variable `{SecretVariable.PlaidClientAccessToken}` is not defined.");
 
-        _logger.LogInformation($"{nameof(PlaidBankingApiService)}: Exiting constructor.");
+        _logger.LogInformation("{Source}: Exiting constructor.", nameof(PlaidBankingApiService));
     }
 
     /// <inheritdoc />
@@ -84,6 +84,8 @@ public class PlaidBankingApiService : IBankingApiService
     /// resilience framework like Polly.
     public async Task<Container> GetAccountBalancesAsync()
     {
+        _logger.LogInformation("{Source}: Attempting to get account balances.", nameof(GetAccountBalancesAsync));
+
         var response = await _httpClient.PostAsJsonAsync("accounts/balance/get",
                                                          new
                                                          {
@@ -91,6 +93,11 @@ public class PlaidBankingApiService : IBankingApiService
                                                              secret = _plaidClientSecret,
                                                              access_token = _plaidClientAccessToken
                                                          });
+
+        _logger.LogInformation("{Source}: The response returned with status code `{StatusCode}` and reason `{ReasonPhrase}`.",
+                               nameof(GetAccountBalancesAsync),
+                               response.StatusCode,
+                               response.ReasonPhrase);
 
         response.EnsureSuccessStatusCode();
 

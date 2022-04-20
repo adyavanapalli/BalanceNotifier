@@ -37,14 +37,18 @@ public class KeyVaultSecretsService : ISecretsService
 
         _secretClient = new(new(azureKeyVaultUri), new DefaultAzureCredential());
 
-        _logger.LogInformation($"{nameof(KeyVaultSecretsService)}: Exiting constructor.");
+        _logger.LogInformation("{Source}: Exiting constructor.", nameof(KeyVaultSecretsService));
     }
 
     /// <inheritdoc />
     public string? GetSecret(string name)
     {
+        _logger.LogInformation("{Source}: Attempting to get secret `{Name}`.", nameof(GetSecret), name);
+
         var keyVaultSecret = _secretClient.GetSecret(name);
         var secretValue = keyVaultSecret?.Value.Value;
+
+        _logger.LogInformation("{Source}: Successfully obtained secret `{Name}`.", nameof(GetSecret), name);
 
         return secretValue;
     }
