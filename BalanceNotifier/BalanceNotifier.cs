@@ -20,7 +20,7 @@ public class BalanceNotifier
     /// existing TODO to fix this at TODO[1] in main.tf.
     /// </para>
     /// </summary>
-    private const string EverydayAt8AmEt = "0 0 12 * * *";
+    private const string EveryMinute = "0 * * * * *";
 
     /// <summary>
     /// A service used for getting banking information via a banking API.
