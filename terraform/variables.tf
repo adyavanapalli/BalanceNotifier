@@ -29,6 +29,12 @@ variable "plaid_client_access_token" {
   sensitive   = true
 }
 
+variable "twilio_account_sid" {
+  description = "A string identifier (SID) used to identify a Twilio API account."
+  type        = string
+  sensitive   = true
+}
+
 variable "twilio_api_key_sid" {
   description = "A string identifier (SID) used to identify a Twilio API key."
   type        = string

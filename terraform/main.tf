@@ -164,6 +164,7 @@ resource "azurerm_key_vault_secret" "key_vault_secrets" {
     PLAID-CLIENT-SECRET       = var.plaid_client_secret
     PLAID-CLIENT-ACCESS-TOKEN = var.plaid_client_access_token
 
+    TWILIO-ACCOUNT-SID            = var.twilio_account_sid
     TWILIO-API-KEY-SID            = var.twilio_api_key_sid
     TWILIO-API-KEY-SECRET         = var.twilio_api_key_secret
     TWILIO-SENDER-PHONE-NUMBER    = var.twilio_sender_phone_number
