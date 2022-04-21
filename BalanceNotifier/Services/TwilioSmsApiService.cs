@@ -16,15 +16,6 @@ namespace BalanceNotifier.Services;
 public class TwilioSmsApiService : ISmsApiService
 {
     /// <summary>
-    /// The base URL of the SMS API.
-    /// <para>
-    /// TODO: This could be further optimized by using an edge location. This would improve the time it takes to deliver
-    /// the SMS message.
-    /// </para>
-    /// </summary>
-    private const string BASE_URL = "https://api.twilio.com";
-
-    /// <summary>
     /// The API version of the SMS API.
     /// </summary>
     private const string API_VERSION = "2010-04-01";
@@ -73,8 +64,6 @@ public class TwilioSmsApiService : ISmsApiService
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _secretsService = secretsService ?? throw new ArgumentNullException(nameof(secretsService));
 
-        _httpClient.BaseAddress = new(BASE_URL);
-
         _twilioAccountSid = _secretsService.GetSecret(SecretVariable.TwilioAccountSid)
             ?? throw new ConfigurationErrorsException($"The secret variable `{SecretVariable.TwilioAccountSid}` is not defined.");
 
@@ -89,6 +78,8 @@ public class TwilioSmsApiService : ISmsApiService
 
         var twilioApiKeySecret = _secretsService.GetSecret(SecretVariable.TwilioApiKeySecret)
             ?? throw new ConfigurationErrorsException($"The secret variable `{SecretVariable.TwilioApiKeySecret}` is not defined.");
+
+        _httpClient.BaseAddress = new(BaseUrl.Twilio);
 
         var twilioBasicAuthenticationValue = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{twilioApiKeySid}:{twilioApiKeySecret}"));
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
