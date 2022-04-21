@@ -13,5 +13,5 @@ public class RequestHeader
     /// <summary>
     /// An HTTP request header for the Plaid client secret.
     /// </summary>
-    public const string PlaidClientSecret = "PLAID-CLIENT-SECRET";
+    public const string PlaidClientSecret = "PLAID-SECRET";
 }
