@@ -14,14 +14,6 @@ namespace BalanceNotifier.Services;
 public class PlaidBankingApiService : IBankingApiService
 {
     /// <summary>
-    /// The base URL of the Banking API.
-    /// <para>
-    /// TODO: This base URL needs to be eventually updated to a production API base URL.
-    /// </para>
-    /// </summary>
-    private const string BASE_URL = "https://development.plaid.com";
-
-    /// <summary>
     /// An HTTP client for making HTTP requests.
     /// </summary>
     private readonly HttpClient _httpClient;
@@ -35,16 +27,6 @@ public class PlaidBankingApiService : IBankingApiService
     /// A service used to manage secrets.
     /// </summary>
     private readonly ISecretsService _secretsService;
-
-    /// <summary>
-    /// A Plaid client ID used to identify calls to the Plaid API.
-    /// </summary>
-    private readonly string _plaidClientId;
-
-    /// <summary>
-    /// A Plaid client secret used to authenticate calls to the Plaid API.
-    /// </summary>
-    private readonly string _plaidClientSecret;
 
     /// <summary>
     /// A Plaid client access token used to make Plaid API requests related to a specific Plaid Item.
@@ -65,16 +47,18 @@ public class PlaidBankingApiService : IBankingApiService
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _secretsService = secretsService ?? throw new ArgumentNullException(nameof(secretsService));
 
-        _httpClient.BaseAddress = new(BASE_URL);
-
-        _plaidClientId = _secretsService.GetSecret(SecretVariable.PlaidClientId)
-            ?? throw new ConfigurationErrorsException($"The secret variable `{SecretVariable.PlaidClientId}` is not defined.");
-
-        _plaidClientSecret = _secretsService.GetSecret(SecretVariable.PlaidClientSecret)
-            ?? throw new ConfigurationErrorsException($"The secret variable `{SecretVariable.PlaidClientSecret}` is not defined.");
-
         _plaidClientAccessToken = _secretsService.GetSecret(SecretVariable.PlaidClientAccessToken)
             ?? throw new ConfigurationErrorsException($"The secret variable `{SecretVariable.PlaidClientAccessToken}` is not defined.");
+
+        var plaidClientId = _secretsService.GetSecret(SecretVariable.PlaidClientId)
+            ?? throw new ConfigurationErrorsException($"The secret variable `{SecretVariable.PlaidClientId}` is not defined.");
+
+        var plaidClientSecret = _secretsService.GetSecret(SecretVariable.PlaidClientSecret)
+            ?? throw new ConfigurationErrorsException($"The secret variable `{SecretVariable.PlaidClientSecret}` is not defined.");
+
+        _httpClient.BaseAddress = new(BaseUrl.Plaid);
+        _httpClient.DefaultRequestHeaders.Add(RequestHeader.PlaidClientId, plaidClientId);
+        _httpClient.DefaultRequestHeaders.Add(RequestHeader.PlaidClientSecret, plaidClientSecret);
 
         _logger.LogInformation("{Source}: Exiting constructor.", nameof(PlaidBankingApiService));
     }
@@ -87,12 +71,7 @@ public class PlaidBankingApiService : IBankingApiService
         _logger.LogInformation("{Source}: Attempting to get account balances.", nameof(GetAccountBalancesAsync));
 
         var response = await _httpClient.PostAsJsonAsync("accounts/balance/get",
-                                                         new
-                                                         {
-                                                             client_id = _plaidClientId,
-                                                             secret = _plaidClientSecret,
-                                                             access_token = _plaidClientAccessToken
-                                                         });
+                                                         new { access_token = _plaidClientAccessToken });
 
         _logger.LogInformation("{Source}: The response returned with status code `{StatusCode}` and reason `{ReasonPhrase}`.",
                                nameof(GetAccountBalancesAsync),
