@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using BalanceNotifier.Constants;
 using BalanceNotifier.Models.Banking;
 using Microsoft.Extensions.Logging;
+using Polly;
 
 namespace BalanceNotifier.Services;
 
@@ -64,19 +65,27 @@ public class PlaidBankingApiService : IBankingApiService
     }
 
     /// <inheritdoc />
-    /// TODO: This call periodically fails, so it needs to be fortified in some way, perhaps using some
-    /// resilience framework like Polly.
     public async Task<Container> GetAccountBalancesAsync()
     {
         _logger.LogInformation("{Source}: Attempting to get account balances.", nameof(GetAccountBalancesAsync));
 
-        var response = await _httpClient.PostAsJsonAsync("accounts/balance/get",
-                                                         new { access_token = _plaidClientAccessToken });
+        var response = await Policy.HandleResult<HttpResponseMessage>(httpResponseMessage => !httpResponseMessage.IsSuccessStatusCode)
+                                   .RetryAsync(3,
+                                               (context, _) =>
+                                               {
+                                                   _logger.LogInformation("{Source}: Request to Plaid returned with result {Result}",
+                                                                          nameof(GetAccountBalancesAsync),
+                                                                          context.Result);
+                                               })
+                                   .ExecuteAsync(() =>
+                                   {
+                                       return _httpClient.PostAsJsonAsync("accounts/balance/get",
+                                                                          new { access_token = _plaidClientAccessToken });
+                                   });
 
-        _logger.LogInformation("{Source}: The response returned with status code `{StatusCode}` and reason `{ReasonPhrase}`.",
+        _logger.LogInformation("{Source}: The response returned with status code `{StatusCode}`.",
                                nameof(GetAccountBalancesAsync),
-                               response.StatusCode,
-                               response.ReasonPhrase);
+                               response.StatusCode);
 
         response.EnsureSuccessStatusCode();
 
