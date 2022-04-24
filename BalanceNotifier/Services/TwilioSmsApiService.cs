@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BalanceNotifier.Constants;
 using Microsoft.Extensions.Logging;
+using Polly;
 
 namespace BalanceNotifier.Services;
 
@@ -95,18 +96,28 @@ public class TwilioSmsApiService : ISmsApiService
     {
         _logger.LogInformation("{Source}: Attempting to send a text message.", nameof(SendMessageAsync));
 
-        var response = await _httpClient.PostAsync($"{API_VERSION}/Accounts/{_twilioAccountSid}/Messages.json",
-                                                   new FormUrlEncodedContent(new List<KeyValuePair<string, string>>
-                                                                             {
-                                                                                 new("Body", body),
-                                                                                 new("From", _twilioSenderPhoneNumber),
-                                                                                 new("To", _twilioRecipientPhoneNumber)
-                                                                             }));
+        var response = await Policy.HandleResult<HttpResponseMessage>(httpResponseMessage => !httpResponseMessage.IsSuccessStatusCode)
+                                   .RetryAsync(3,
+                                               (context, _) =>
+                                               {
+                                                   _logger.LogInformation("{Source}: Request to Twilio returned with result {Result}",
+                                                                          nameof(SendMessageAsync),
+                                                                          context.Result);
+                                               })
+                                   .ExecuteAsync(() =>
+                                   {
+                                       return _httpClient.PostAsync($"{API_VERSION}/Accounts/{_twilioAccountSid}/Messages.json",
+                                                                    new FormUrlEncodedContent(new List<KeyValuePair<string, string>>
+                                                                                              {
+                                                                                                  new("Body", body),
+                                                                                                  new("From", _twilioSenderPhoneNumber),
+                                                                                                  new("To", _twilioRecipientPhoneNumber)
+                                                                                              }));
+                                   });
 
-        _logger.LogInformation("{Source}: The response returned with status code `{StatusCode}` and reason `{ReasonPhrase}`.",
+        _logger.LogInformation("{Source}: The response returned with status code `{StatusCode}`.",
                                nameof(SendMessageAsync),
-                               response.StatusCode,
-                               response.ReasonPhrase);
+                               response.StatusCode);
 
         response.EnsureSuccessStatusCode();
     }
