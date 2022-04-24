@@ -15,10 +15,6 @@ public class BaseUrl
 
     /// <summary>
     /// A base URL for the Twilio
-    /// <para>
-    /// TODO: This could be further optimized by using an edge location. This would improve the time it takes to deliver
-    /// the SMS message.
-    /// </para>
     /// </summary>
-    public const string Twilio = "https://api.twilio.com";
+    public const string Twilio = "https://api.ashburn.us1.twilio.com";
 }
