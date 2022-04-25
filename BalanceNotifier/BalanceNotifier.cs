@@ -14,13 +14,18 @@ namespace BalanceNotifier;
 public class BalanceNotifier
 {
     /// <summary>
-    /// A NCRON expression for everyday at 8 AM ET.
+    /// An NCRON expression for everyday at 8 AM ET.
     /// <para>
     /// TODO: Note that this will not be correct when daylight savings is not active. Also note that there is an
     /// existing TODO to fix this at TODO[1] in main.tf.
     /// </para>
     /// </summary>
     private const string EveryDayAt8AmEt = "0 0 12 * * *";
+
+    /// <summary>
+    /// An NCRON expression for every minute. This constant is provided for debugging purposes.
+    /// </summary>
+    private const string EveryMinute = "0 * * * * *";
 
     /// <summary>
     /// A service used for getting banking information via a banking API.
