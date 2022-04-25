@@ -55,7 +55,7 @@ public class BalanceNotifier
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _smsApiService = smsApiService ?? throw new ArgumentNullException(nameof(smsApiService));
 
-        _logger.LogInformation("{Source}: Exiting constructor.", nameof(BalanceNotifier));
+        _logger.LogInformation("[{Source}] Exiting constructor.", nameof(BalanceNotifier));
     }
 
     /// <summary>
@@ -65,9 +65,9 @@ public class BalanceNotifier
     /// function is triggered.</param>
     /// <param name="logger">A logger object for logging information.</param>
     [FunctionName(nameof(BalanceNotifier))]
-    public async Task Run([TimerTrigger(EveryDayAt8AmEt)] TimerInfo timerInfo)
+    public async Task Run([TimerTrigger(EveryMinute)] TimerInfo timerInfo)
     {
-        _logger.LogInformation("{Source}: Timer trigger function started execution at: {UtcNow}.",
+        _logger.LogInformation("[{Source}] Timer trigger function started execution at: {UtcNow}.",
                                nameof(Run),
                                DateTime.UtcNow);
 
@@ -83,7 +83,7 @@ public class BalanceNotifier
                                                 ?.Balances
                                                 ?.Current;
 
-        _logger.LogInformation("{Source}: Successfully obtained and parsed account balances [depository = ${DepositoryAccountBalance} | (${CreditCardAccountBalance})].",
+        _logger.LogInformation("[{Source}] Successfully obtained and parsed account balances [depository = ${DepositoryAccountBalance} | (${CreditCardAccountBalance})].",
                                nameof(Run),
                                depositoryAccountBalance,
                                creditCardAccountBalance);
