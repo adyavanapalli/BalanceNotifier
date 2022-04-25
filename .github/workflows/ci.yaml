@@ -58,6 +58,9 @@ jobs:
       LINUX_FUNCTION_APP_NAME: ${{ steps.tf-output.outputs.LINUX_FUNCTION_APP_NAME }}
       RESOURCE_GROUP_NAME: ${{ steps.tf-output.outputs.RESOURCE_GROUP_NAME }}
 
+    permissions:
+      id-token: write
+
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
