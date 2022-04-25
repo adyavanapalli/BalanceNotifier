@@ -39,6 +39,11 @@ jobs:
 
   terraform:
     env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
       TF_VAR_plaid_client_id: ${{ secrets.TF_VAR_PLAID_CLIENT_ID }}
       TF_VAR_plaid_client_secret: ${{ secrets.TF_VAR_PLAID_CLIENT_SECRET }}
       TF_VAR_plaid_client_access_token: ${{ secrets.TF_VAR_PLAID_CLIENT_ACCESS_TOKEN }}
@@ -58,20 +63,10 @@ jobs:
       LINUX_FUNCTION_APP_NAME: ${{ steps.tf-output.outputs.LINUX_FUNCTION_APP_NAME }}
       RESOURCE_GROUP_NAME: ${{ steps.tf-output.outputs.RESOURCE_GROUP_NAME }}
 
-    permissions:
-      id-token: write
-
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -110,6 +105,9 @@ jobs:
   deploy:
     environment: Production
     needs: terraform
+    permissions:
+      id-token: write
+
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
