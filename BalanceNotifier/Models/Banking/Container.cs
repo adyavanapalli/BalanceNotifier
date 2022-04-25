@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace BalanceNotifier.Models.Banking;
 
@@ -11,6 +10,5 @@ public class Container
     /// <summary>
     /// A list of accounts inside the container.
     /// </summary>
-    [JsonPropertyName("accounts")]
     public List<Account>? Accounts { get; set; }
 }
