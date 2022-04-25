@@ -90,8 +90,6 @@ public class TwilioSmsApiService : ISmsApiService
     }
 
     /// <inheritdoc />
-    /// TODO: There's a way to verify whether the SMS was sent using Twilio's API. We should implement this, and upon
-    /// failure, resend the request.
     public async Task SendMessageAsync(string body)
     {
         _logger.LogInformation("{Source}: Attempting to send a text message.", nameof(SendMessageAsync));
