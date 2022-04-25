@@ -86,19 +86,19 @@ public class TwilioSmsApiService : ISmsApiService
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
                                                                                         twilioBasicAuthenticationValue);
 
-        _logger.LogInformation("{Source}: Exiting constructor.", nameof(TwilioSmsApiService));
+        _logger.LogInformation("[{Source}] Exiting constructor.", nameof(TwilioSmsApiService));
     }
 
     /// <inheritdoc />
     public async Task SendMessageAsync(string body)
     {
-        _logger.LogInformation("{Source}: Attempting to send a text message.", nameof(SendMessageAsync));
+        _logger.LogInformation("[{Source}] Attempting to send a text message.", nameof(SendMessageAsync));
 
         var response = await Policy.HandleResult<HttpResponseMessage>(httpResponseMessage => !httpResponseMessage.IsSuccessStatusCode)
                                    .RetryAsync(3,
                                                (context, _) =>
                                                {
-                                                   _logger.LogInformation("{Source}: Request to Twilio returned with result {Result}",
+                                                   _logger.LogInformation("[{Source}] Request returned with response:\n{Response}",
                                                                           nameof(SendMessageAsync),
                                                                           context.Result);
                                                })
@@ -113,9 +113,9 @@ public class TwilioSmsApiService : ISmsApiService
                                                                                               }));
                                    });
 
-        _logger.LogInformation("{Source}: The response returned with status code `{StatusCode}`.",
+        _logger.LogInformation("[{Source}] Request returned returned with response:\n{Response}",
                                nameof(SendMessageAsync),
-                               response.StatusCode);
+                               response);
 
         response.EnsureSuccessStatusCode();
     }

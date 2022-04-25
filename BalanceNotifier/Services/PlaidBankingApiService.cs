@@ -61,19 +61,19 @@ public class PlaidBankingApiService : IBankingApiService
         _httpClient.DefaultRequestHeaders.Add(RequestHeader.PlaidClientId, plaidClientId);
         _httpClient.DefaultRequestHeaders.Add(RequestHeader.PlaidClientSecret, plaidClientSecret);
 
-        _logger.LogInformation("{Source}: Exiting constructor.", nameof(PlaidBankingApiService));
+        _logger.LogInformation("[{Source}] Exiting constructor.", nameof(PlaidBankingApiService));
     }
 
     /// <inheritdoc />
     public async Task<Container> GetAccountBalancesAsync()
     {
-        _logger.LogInformation("{Source}: Attempting to get account balances.", nameof(GetAccountBalancesAsync));
+        _logger.LogInformation("[{Source}] Attempting to get account balances.", nameof(GetAccountBalancesAsync));
 
         var response = await Policy.HandleResult<HttpResponseMessage>(httpResponseMessage => !httpResponseMessage.IsSuccessStatusCode)
                                    .RetryAsync(3,
                                                (context, _) =>
                                                {
-                                                   _logger.LogInformation("{Source}: Request to Plaid returned with result {Result}",
+                                                   _logger.LogInformation("[{Source}] Request returned with response:\n{Response}",
                                                                           nameof(GetAccountBalancesAsync),
                                                                           context.Result);
                                                })
@@ -83,9 +83,9 @@ public class PlaidBankingApiService : IBankingApiService
                                                                           new { access_token = _plaidClientAccessToken });
                                    });
 
-        _logger.LogInformation("{Source}: The response returned with status code `{StatusCode}`.",
+        _logger.LogInformation("[{Source}] Request returned with response:\n{Response}",
                                nameof(GetAccountBalancesAsync),
-                               response.StatusCode);
+                               response);
 
         response.EnsureSuccessStatusCode();
 
