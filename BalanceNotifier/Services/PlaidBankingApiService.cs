@@ -73,7 +73,8 @@ public class PlaidBankingApiService : IBankingApiService
                                    .RetryAsync(3,
                                                (context, _) =>
                                                {
-                                                   _logger.LogInformation("[{Source}] Request returned with response:\n{Response}",
+                                                   _logger.LogInformation("[{Source}] Request returned with response:{NewLine}{Response}",
+                                                                          Environment.NewLine,
                                                                           nameof(GetAccountBalancesAsync),
                                                                           context.Result);
                                                })
@@ -83,7 +84,8 @@ public class PlaidBankingApiService : IBankingApiService
                                                                           new { access_token = _plaidClientAccessToken });
                                    });
 
-        _logger.LogInformation("[{Source}] Request returned with response:\n{Response}",
+        _logger.LogInformation("[{Source}] Request returned with response:{NewLine}{Response}",
+                               Environment.NewLine,
                                nameof(GetAccountBalancesAsync),
                                response);
 

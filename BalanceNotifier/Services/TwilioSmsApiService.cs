@@ -98,7 +98,8 @@ public class TwilioSmsApiService : ISmsApiService
                                    .RetryAsync(3,
                                                (context, _) =>
                                                {
-                                                   _logger.LogInformation("[{Source}] Request returned with response:\n{Response}",
+                                                   _logger.LogInformation("[{Source}] Request returned with response:{NewLine}{Response}",
+                                                                          Environment.NewLine,
                                                                           nameof(SendMessageAsync),
                                                                           context.Result);
                                                })
@@ -113,7 +114,8 @@ public class TwilioSmsApiService : ISmsApiService
                                                                                               }));
                                    });
 
-        _logger.LogInformation("[{Source}] Request returned returned with response:\n{Response}",
+        _logger.LogInformation("[{Source}] Request returned returned with response:{NewLine}{Response}",
+                               Environment.NewLine,
                                nameof(SendMessageAsync),
                                response);
 
