@@ -20,7 +20,7 @@ public class BalanceNotifier
     /// existing TODO to fix this at TODO[1] in main.tf.
     /// </para>
     /// </summary>
-    private const string EveryHourBetween8AmAnd8PmEt = "0 0 12-0 * * *";
+    private const string EveryHourBetween8AmAnd8PmEt = "0 0 12-23,0 * * *";
 
     /// <summary>
     /// An NCRON expression for every minute. This constant is provided for debugging purposes.
