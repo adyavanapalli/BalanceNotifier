@@ -26,7 +26,7 @@ public class BalanceNotifier
     /// <summary>
     /// An NCRON expression for every minute. This constant is provided for debugging purposes.
     /// </summary>
-    private const string EveryMinute = "*/10 * * * * *";
+    private const string EveryMinute = "0 * * * * *";
 
     /// <summary>
     /// A service used for getting banking information via a banking API.
@@ -66,7 +66,7 @@ public class BalanceNotifier
     /// function is triggered.</param>
     /// <param name="logger">A logger object for logging information.</param>
     [FunctionName(nameof(BalanceNotifier))]
-    public async Task Run([TimerTrigger(EveryMinute)] TimerInfo timerInfo)
+    public async Task Run([TimerTrigger(EveryHourBetween8AmAnd8PmEt)] TimerInfo timerInfo)
     {
         _logger.LogInformation("[{Source}] Timer trigger function started execution at: {UtcNow}.",
                                nameof(Run),
