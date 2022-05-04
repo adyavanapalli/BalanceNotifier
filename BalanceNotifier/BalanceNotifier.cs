@@ -92,7 +92,7 @@ public class BalanceNotifier
         var positiveBalance = (+25.00m).ToString("C", cultureInfo);
         var negativeBalance = (-25.00m).ToString("C", cultureInfo);
 
-        await _smsApiService.SendMessageAsync($"{positiveBalance}, {negativeBalance}, {cultureInfo}");
+        await _smsApiService.SendMessageAsync($"{positiveBalance}, {negativeBalance}");
 
         // await _smsApiService.SendMessageAsync($"[ {depositoryAccountBalance:C} | {creditCardAccountBalance:C} ]");
     }
