@@ -83,15 +83,16 @@ public class BalanceNotifier
         //                                         ?.Balances
         //                                         ?.Current;
 
+        var cultureInfo = CultureInfo.GetCultureInfo("en-US");
         // _logger.LogInformation("[{Source}] Successfully obtained and parsed account balances [depository = {DepositoryAccountBalance:C} | {CreditCardAccountBalance:C}].",
         //                        nameof(Run),
         //                        depositoryAccountBalance,
         //                        creditCardAccountBalance);
 
-        var positiveBalance = +25.00m;
-        var negativeBalance = -25.00m;
+        var positiveBalance = (+25.00m).ToString("C", cultureInfo);
+        var negativeBalance = (-25.00m).ToString("C", cultureInfo);
 
-        await _smsApiService.SendMessageAsync($"{positiveBalance}, {negativeBalance}, {CultureInfo.CurrentCulture}");
+        await _smsApiService.SendMessageAsync($"{positiveBalance}, {negativeBalance}, {cultureInfo}");
 
         // await _smsApiService.SendMessageAsync($"[ {depositoryAccountBalance:C} | {creditCardAccountBalance:C} ]");
     }
