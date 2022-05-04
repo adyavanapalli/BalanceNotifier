@@ -88,7 +88,7 @@ public class BalanceNotifier
         //                        depositoryAccountBalance,
         //                        creditCardAccountBalance);
 
-        await _smsApiService.SendMessageAsync($"{25.00:C}");
+        await _smsApiService.SendMessageAsync($"{25.00:C}, {-25.00:C}");
 
         // await _smsApiService.SendMessageAsync($"[ {depositoryAccountBalance:C} | {creditCardAccountBalance:C} ]");
     }
