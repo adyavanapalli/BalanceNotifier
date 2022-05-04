@@ -1,5 +1,5 @@
 using System;
-using System.Linq;
+using System.Globalization;
 using System.Threading.Tasks;
 using BalanceNotifier.Services;
 using Microsoft.Azure.WebJobs;
@@ -88,7 +88,10 @@ public class BalanceNotifier
         //                        depositoryAccountBalance,
         //                        creditCardAccountBalance);
 
-        await _smsApiService.SendMessageAsync($"{25.00:C}, {-25.00:C}");
+        var positiveBalance = +25.00m;
+        var negativeBalance = -25.00m;
+
+        await _smsApiService.SendMessageAsync($"{positiveBalance}, {negativeBalance}, {CultureInfo.CurrentCulture}");
 
         // await _smsApiService.SendMessageAsync($"[ {depositoryAccountBalance:C} | {creditCardAccountBalance:C} ]");
     }
