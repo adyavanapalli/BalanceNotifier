@@ -25,7 +25,7 @@ public class BalanceNotifier
     /// <summary>
     /// An NCRON expression for every minute. This constant is provided for debugging purposes.
     /// </summary>
-    private const string EveryMinute = "0 * * * * *";
+    private const string EveryMinute = "*/10 * * * * *";
 
     /// <summary>
     /// A service used for getting banking information via a banking API.
@@ -65,29 +65,31 @@ public class BalanceNotifier
     /// function is triggered.</param>
     /// <param name="logger">A logger object for logging information.</param>
     [FunctionName(nameof(BalanceNotifier))]
-    public async Task Run([TimerTrigger(EveryHourBetween8AmAnd8PmEt)] TimerInfo timerInfo)
+    public async Task Run([TimerTrigger(EveryMinute)] TimerInfo timerInfo)
     {
         _logger.LogInformation("[{Source}] Timer trigger function started execution at: {UtcNow}.",
                                nameof(Run),
                                DateTime.UtcNow);
 
-        var container = await _bankingApiService.GetAccountBalancesAsync();
+        // var container = await _bankingApiService.GetAccountBalancesAsync();
 
-        var depositoryAccountBalance = container?.Accounts
-                                                ?.FirstOrDefault(account => account.Type == "depository")
-                                                ?.Balances
-                                                ?.Current;
+        // var depositoryAccountBalance = container?.Accounts
+        //                                         ?.FirstOrDefault(account => account.Type == "depository")
+        //                                         ?.Balances
+        //                                         ?.Current;
 
-        var creditCardAccountBalance = container?.Accounts
-                                                ?.FirstOrDefault(account => account.Type == "credit")
-                                                ?.Balances
-                                                ?.Current;
+        // var creditCardAccountBalance = container?.Accounts
+        //                                         ?.FirstOrDefault(account => account.Type == "credit")
+        //                                         ?.Balances
+        //                                         ?.Current;
 
-        _logger.LogInformation("[{Source}] Successfully obtained and parsed account balances [depository = {DepositoryAccountBalance:C} | {CreditCardAccountBalance:C}].",
-                               nameof(Run),
-                               depositoryAccountBalance,
-                               creditCardAccountBalance);
+        // _logger.LogInformation("[{Source}] Successfully obtained and parsed account balances [depository = {DepositoryAccountBalance:C} | {CreditCardAccountBalance:C}].",
+        //                        nameof(Run),
+        //                        depositoryAccountBalance,
+        //                        creditCardAccountBalance);
 
-        await _smsApiService.SendMessageAsync($"[ {depositoryAccountBalance:C} | {creditCardAccountBalance:C} ]");
+        await _smsApiService.SendMessageAsync($"{25.00:C}");
+
+        // await _smsApiService.SendMessageAsync($"[ {depositoryAccountBalance:C} | {creditCardAccountBalance:C} ]");
     }
 }
