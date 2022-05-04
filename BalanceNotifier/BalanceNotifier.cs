@@ -83,11 +83,11 @@ public class BalanceNotifier
                                                 ?.Balances
                                                 ?.Current;
 
-        _logger.LogInformation("[{Source}] Successfully obtained and parsed account balances [depository = ${DepositoryAccountBalance} | (${CreditCardAccountBalance})].",
+        _logger.LogInformation("[{Source}] Successfully obtained and parsed account balances [depository = {DepositoryAccountBalance:C} | {CreditCardAccountBalance:C}].",
                                nameof(Run),
                                depositoryAccountBalance,
                                creditCardAccountBalance);
 
-        await _smsApiService.SendMessageAsync($"[ ${depositoryAccountBalance} | (${creditCardAccountBalance}) ]");
+        await _smsApiService.SendMessageAsync($"[ {depositoryAccountBalance:C} | {creditCardAccountBalance:C} ]");
     }
 }
