@@ -134,5 +134,8 @@ jobs:
 
       - name: Restart Azure Function App
         run: |
-          az functionapp restart --name ${{ needs.terraform.outputs.LINUX_FUNCTION_APP_NAME }} \
-                                 --resource-group ${{ needs.terraform.outputs.RESOURCE_GROUP_NAME }}
+          az functionapp stop --name ${{ needs.terraform.outputs.LINUX_FUNCTION_APP_NAME }} \
+                              --resource-group ${{ needs.terraform.outputs.RESOURCE_GROUP_NAME }}
+
+          az functionapp start --name ${{ needs.terraform.outputs.LINUX_FUNCTION_APP_NAME }} \
+                               --resource-group ${{ needs.terraform.outputs.RESOURCE_GROUP_NAME }}
