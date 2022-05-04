@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using BalanceNotifier.Services;
 using Microsoft.Azure.WebJobs;
@@ -71,29 +72,27 @@ public class BalanceNotifier
                                nameof(Run),
                                DateTime.UtcNow);
 
-        // var container = await _bankingApiService.GetAccountBalancesAsync();
-
-        // var depositoryAccountBalance = container?.Accounts
-        //                                         ?.FirstOrDefault(account => account.Type == "depository")
-        //                                         ?.Balances
-        //                                         ?.Current;
-
-        // var creditCardAccountBalance = container?.Accounts
-        //                                         ?.FirstOrDefault(account => account.Type == "credit")
-        //                                         ?.Balances
-        //                                         ?.Current;
+        var container = await _bankingApiService.GetAccountBalancesAsync();
 
         var cultureInfo = CultureInfo.GetCultureInfo("en-US");
-        // _logger.LogInformation("[{Source}] Successfully obtained and parsed account balances [depository = {DepositoryAccountBalance:C} | {CreditCardAccountBalance:C}].",
-        //                        nameof(Run),
-        //                        depositoryAccountBalance,
-        //                        creditCardAccountBalance);
 
-        var positiveBalance = (+25.00m).ToString("C", cultureInfo);
-        var negativeBalance = (-25.00m).ToString("C", cultureInfo);
+        var depositoryAccountBalance = container?.Accounts
+                                                ?.FirstOrDefault(account => account.Type == "depository")
+                                                ?.Balances
+                                                ?.Current
+                                                ?.ToString("C", cultureInfo);
 
-        await _smsApiService.SendMessageAsync($"{positiveBalance}, {negativeBalance}");
+        var creditCardAccountBalance = container?.Accounts
+                                                ?.FirstOrDefault(account => account.Type == "credit")
+                                                ?.Balances
+                                                ?.Current
+                                                ?.ToString("C", cultureInfo);
 
-        // await _smsApiService.SendMessageAsync($"[ {depositoryAccountBalance:C} | {creditCardAccountBalance:C} ]");
+        _logger.LogInformation("[{Source}] Successfully obtained and parsed account balances [depository = {DepositoryAccountBalance:C} | {CreditCardAccountBalance:C}].",
+                               nameof(Run),
+                               depositoryAccountBalance,
+                               creditCardAccountBalance);
+
+        await _smsApiService.SendMessageAsync($"[ {depositoryAccountBalance} | {creditCardAccountBalance} ]");
     }
 }
