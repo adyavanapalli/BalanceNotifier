@@ -4,7 +4,7 @@ using BalanceNotifier.Models.Banking;
 namespace BalanceNotifier.Services;
 
 /// <summary>
-/// An interface specifying the contract that a Banking API service should implement.
+/// An interface specifying the contract that a Banking API service must implement.
 /// </summary>
 public interface IBankingApiService
 {

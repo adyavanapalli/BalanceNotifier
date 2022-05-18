@@ -29,6 +29,12 @@ variable "plaid_client_access_token" {
   sensitive   = true
 }
 
+variable "storage_account_table_name" {
+  default     = "balances"
+  description = "The name of the storage account table."
+  type        = string
+}
+
 variable "twilio_account_sid" {
   description = "A string identifier (SID) used to identify a Twilio API account."
   type        = string

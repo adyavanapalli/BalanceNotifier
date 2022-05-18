@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 namespace BalanceNotifier.Services;
 
 /// <summary>
-/// An interface specifying the contract that an SMS API service should implement.
+/// An interface specifying the contract that an SMS API service must implement.
 /// </summary>
 public interface ISmsApiService
 {

@@ -20,6 +20,7 @@ public class Startup : FunctionsStartup
         functionsHostBuilder.Services.AddHttpClient()
                                      .AddSingleton<ISecretsService, KeyVaultSecretsService>()
                                      .AddSingleton<ISmsApiService, TwilioSmsApiService>()
+                                     .AddSingleton<IStorageService, StorageAccountTableService>()
                                      .AddSingleton<IBankingApiService, PlaidBankingApiService>();
     }
 }
