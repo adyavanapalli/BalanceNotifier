@@ -115,8 +115,8 @@ public class TwilioSmsApiService : ISmsApiService
                                    });
 
         _logger.LogInformation("[{Source}] Request returned returned with response:{NewLine}{Response}",
-                               Environment.NewLine,
                                nameof(SendMessageAsync),
+                               Environment.NewLine,
                                response);
 
         response.EnsureSuccessStatusCode();

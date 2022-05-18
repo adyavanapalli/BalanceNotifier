@@ -74,8 +74,8 @@ public class PlaidBankingApiService : IBankingApiService
                                                (context, _) =>
                                                {
                                                    _logger.LogInformation("[{Source}] Request returned with response:{NewLine}{Response}",
-                                                                          Environment.NewLine,
                                                                           nameof(GetAccountBalancesAsync),
+                                                                          Environment.NewLine,
                                                                           context.Result);
                                                })
                                    .ExecuteAsync(() =>
@@ -85,8 +85,8 @@ public class PlaidBankingApiService : IBankingApiService
                                    });
 
         _logger.LogInformation("[{Source}] Request returned with response:{NewLine}{Response}",
-                               Environment.NewLine,
                                nameof(GetAccountBalancesAsync),
+                               Environment.NewLine,
                                response);
 
         response.EnsureSuccessStatusCode();
