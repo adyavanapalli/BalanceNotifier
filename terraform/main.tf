@@ -191,13 +191,6 @@ data "azurerm_linux_function_app" "linux_function_app" {
   resource_group_name = azurerm_linux_function_app.linux_function_app.resource_group_name
 }
 
-resource "azurerm_role_assignment" "role_assignment_linux_function_app_key_vault" {
-  principal_id = data.azurerm_linux_function_app.linux_function_app.identity[0].principal_id
-  scope        = azurerm_key_vault.key_vault.id
-
-  role_definition_name = "Key Vault Secrets User"
-}
-
 resource "azurerm_role_assignment" "role_assignments" {
   for_each = {
     azurerm_linux_function_app_to_azurerm_key_vault = {
