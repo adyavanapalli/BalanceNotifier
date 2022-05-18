@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 namespace BalanceNotifier.Services;
 
 /// <summary>
-/// An interface specifying the contract that a secrets service should implement.
+/// An interface specifying the contract that a secrets service must implement.
 /// </summary>
 public interface ISecretsService
 {

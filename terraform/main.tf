@@ -73,6 +73,11 @@ resource "azurerm_storage_account" "storage_account" {
   # shared_access_key_enabled = false
 }
 
+resource "azurerm_storage_table" "storage_table" {
+  name                 = var.storage_account_table_name
+  storage_account_name = azurerm_storage_account.storage_account.name
+}
+
 resource "azurerm_service_plan" "service_plan" {
   location            = var.region
   name                = "plan-${local.common_resource_suffix}"
@@ -113,7 +118,9 @@ resource "azurerm_linux_function_app" "linux_function_app" {
     # it's supported on the Linux Consumption plan.
     # WEBSITE_TIME_ZONE = var.timezone
 
-    AZURE_KEY_VAULT_URI = azurerm_key_vault.key_vault.vault_uri
+    AZURE_KEY_VAULT_URI              = azurerm_key_vault.key_vault.vault_uri
+    AZURE_STORAGE_ACCOUNT_TABLE_NAME = azurerm_storage_table.storage_table.name
+    AZURE_STORAGE_ACCOUNT_TABLE_URI  = azurerm_storage_account.storage_account.primary_table_endpoint
   }
   identity {
     type = "SystemAssigned"
@@ -183,13 +190,35 @@ data "azurerm_linux_function_app" "linux_function_app" {
   resource_group_name = azurerm_linux_function_app.linux_function_app.resource_group_name
 }
 
-resource "azurerm_role_assignment" "role_assignment" {
-  // There's a bug with the azurerm provider where the
-  // `azurerm_linux_function_app.linux_function_app.identity` block doesn't
-  // exist even after the resource is created, so we explicitly query it using
-  // Terraform data sources instead.
+resource "azurerm_role_assignment" "role_assignment_linux_function_app_key_vault" {
   principal_id = data.azurerm_linux_function_app.linux_function_app.identity[0].principal_id
   scope        = azurerm_key_vault.key_vault.id
 
   role_definition_name = "Key Vault Secrets User"
+}
+
+resource "azurerm_role_assignment" "role_assignments" {
+  for_each = {
+    azurerm_linux_function_app_to_azurerm_key_vault = {
+      principal_id = data.azurerm_linux_function_app.linux_function_app.identity[0].principal_id
+      scope        = azurerm_key_vault.key_vault.id
+
+      role_definition_name = "Key Vault Secrets User"
+    }
+    azurerm_linux_function_app_to_azurerm_storage_account = {
+      // There's a bug with the azurerm provider where the
+      // `azurerm_linux_function_app.linux_function_app.identity` block doesn't
+      // exist even after the resource is created, so we explicitly query it
+      // using Terraform data sources instead.
+      principal_id = data.azurerm_linux_function_app.linux_function_app.identity[0].principal_id
+      scope        = azurerm_storage_account.storage_account.id
+
+      role_definition_name = "Storage Table Data Contributor"
+    }
+  }
+
+  principal_id = each.value.principal_id
+  scope        = each.value.scope
+
+  role_definition_name = each.value.role_definition_name
 }
