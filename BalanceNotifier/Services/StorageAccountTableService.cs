@@ -47,11 +47,17 @@ public class StorageAccountTableService : IStorageService
     /// <inheritdoc />
     /// TODO: This API call needs to be fortified using Polly.
     /// TODO: This needs logging.
-    public async Task<TableEntity> GetTableEntity()
+    public async Task<TableEntity?> GetTableEntity()
     {
-        var response = await _tableClient.GetEntityAsync<TableEntity>(string.Empty, string.Empty);
-
-        return response.Value;
+        try
+        {
+            var response = await _tableClient.GetEntityAsync<TableEntity>(string.Empty, string.Empty);
+            return response!.Value;
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     /// <inheritdoc />

@@ -11,8 +11,8 @@ public interface IStorageService
     /// <summary>
     /// Asynchronously gets the previously stored <see cref="TableEntity" /> from storage.
     /// </summary>
-    /// <returns>A task wrapping a <see cref="TableEntity" />.</returns>
-    Task<TableEntity> GetTableEntity();
+    /// <returns>A task wrapping a <see cref="TableEntity" /> if it exists else null.</returns>
+    Task<TableEntity?> GetTableEntity();
 
     /// <summary>
     /// Asynchronously stores the specified <paramref name="tableEntity" /> in storage. If the <paramref
