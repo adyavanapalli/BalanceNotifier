@@ -74,6 +74,7 @@ resource "azurerm_storage_account" "storage_account" {
 }
 
 resource "azurerm_storage_table" "storage_table" {
+  #checkov:skip=CKV2_AZURE_20: Storage logging for Table service read requests is not needed.
   name                 = var.storage_account_table_name
   storage_account_name = azurerm_storage_account.storage_account.name
 }
