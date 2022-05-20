@@ -79,6 +79,14 @@ resource "azurerm_storage_table" "storage_table" {
   storage_account_name = azurerm_storage_account.storage_account.name
 }
 
+# A table entity is provided in Terraform so that after every new deploy, a
+# balance notification is guaranteed to be sent out at least once.
+resource "azurerm_storage_table_entity" "storage_table_entity" {
+  storage_account_name = azurerm_storage_account.storage_account.name
+  table_name           = azurerm_storage_table.storage_table.name
+  entity               = {}
+}
+
 resource "azurerm_service_plan" "service_plan" {
   location            = var.region
   name                = "plan-${local.common_resource_suffix}"
