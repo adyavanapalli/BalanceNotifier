@@ -87,9 +87,6 @@ resource "azurerm_service_plan" "service_plan" {
   sku_name            = "Y1"
 }
 
-# TODO: We should figure out if this resource should be eventually removed after
-# the application is working correctly. It might be useful to have it forever,
-# but time will tell...
 resource "azurerm_application_insights" "application_insights" {
   application_type    = "web"
   location            = azurerm_resource_group.resource_group.location
@@ -112,13 +109,6 @@ resource "azurerm_linux_function_app" "linux_function_app" {
   storage_account_name = azurerm_storage_account.storage_account.name
 
   app_settings = {
-    # TODO[1]: According to [Timer trigger for Azure
-    # Functions](https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer?tabs=in-process&pivots=programming-language-csharp#ncrontab-time-zones):
-    # "WEBSITE_TIME_ZONE is not currently supported on the Linux Consumption
-    # plan.", so we'll comment this out and its corresponding declaration until
-    # it's supported on the Linux Consumption plan.
-    # WEBSITE_TIME_ZONE = var.timezone
-
     AZURE_KEY_VAULT_URI              = azurerm_key_vault.key_vault.vault_uri
     AZURE_STORAGE_ACCOUNT_TABLE_NAME = azurerm_storage_table.storage_table.name
     AZURE_STORAGE_ACCOUNT_TABLE_URI  = azurerm_storage_account.storage_account.primary_table_endpoint
