@@ -16,18 +16,9 @@ namespace BalanceNotifier;
 public class BalanceNotifier
 {
     /// <summary>
-    /// An NCRON expression for every hour between 8 AM and 8 PM ET.
-    /// <para>
-    /// TODO: Note that this will not be correct when daylight savings is not active. Also note that there is an
-    /// existing TODO to fix this at TODO[1] in main.tf.
-    /// </para>
+    /// An NCRON expression for every five minutes.
     /// </summary>
-    private const string EveryHourBetween8AmAnd8PmEt = "0 0 12-23,0 * * *";
-
-    /// <summary>
-    /// An NCRON expression for every minute. This constant is provided for debugging purposes.
-    /// </summary>
-    private const string EveryMinute = "0 * * * * *";
+    private const string EveryFiveMinutes = "0 */5 * * * *";
 
     /// <summary>
     /// A service used for getting banking information via a banking API.
@@ -79,7 +70,7 @@ public class BalanceNotifier
     /// function is triggered.</param>
     /// <param name="logger">A logger object for logging information.</param>
     [FunctionName(nameof(BalanceNotifier))]
-    public async Task Run([TimerTrigger(EveryMinute)] TimerInfo timerInfo)
+    public async Task Run([TimerTrigger(EveryFiveMinutes)] TimerInfo timerInfo)
     {
         _logger.LogInformation("[{Source}] Timer trigger function started execution at: {UtcNow}.",
                                nameof(Run),
