@@ -107,7 +107,7 @@ public class BalanceNotifier
         if (depositoryAccountBalance != previousDepositoryAccountBalance ||
             creditCardAccountBalance != previousCreditCardAccountBalance)
         {
-            await _storageService.StoreTableEntity(new TableEntity(string.Empty, string.Empty)
+            await _storageService.StoreTableEntity(new TableEntity(Guid.Empty.ToString(), Guid.Empty.ToString())
                                                    {
                                                        {nameof(depositoryAccountBalance), depositoryAccountBalance},
                                                        {nameof(creditCardAccountBalance), creditCardAccountBalance}
