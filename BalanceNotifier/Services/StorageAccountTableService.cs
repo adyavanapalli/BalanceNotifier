@@ -51,7 +51,7 @@ public class StorageAccountTableService : IStorageService
     {
         try
         {
-            var response = await _tableClient.GetEntityAsync<TableEntity>(string.Empty, string.Empty);
+            var response = await _tableClient.GetEntityAsync<TableEntity>(Guid.Empty.ToString(), Guid.Empty.ToString());
             return response!.Value;
         }
         catch
