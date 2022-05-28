@@ -83,8 +83,8 @@ resource "azurerm_storage_table" "storage_table" {
 # balance notification is guaranteed to be sent out at least once.
 resource "azurerm_storage_table_entity" "storage_table_entity" {
   entity               = {}
-  partition_key        = ""
-  row_key              = ""
+  partition_key        = "00000000-0000-0000-0000-000000000000"
+  row_key              = "00000000-0000-0000-0000-000000000000"
   storage_account_name = azurerm_storage_account.storage_account.name
   table_name           = azurerm_storage_table.storage_table.name
 }
