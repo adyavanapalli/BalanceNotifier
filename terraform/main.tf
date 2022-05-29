@@ -123,6 +123,7 @@ resource "azurerm_linux_function_app" "linux_function_app" {
     AZURE_KEY_VAULT_URI              = azurerm_key_vault.key_vault.vault_uri
     AZURE_STORAGE_ACCOUNT_TABLE_NAME = azurerm_storage_table.storage_table.name
     AZURE_STORAGE_ACCOUNT_TABLE_URI  = azurerm_storage_account.storage_account.primary_table_endpoint
+    WEBSITE_MOUNT_ENABLED            = "1"
   }
   identity {
     type = "SystemAssigned"
