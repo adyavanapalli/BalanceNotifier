@@ -19,6 +19,7 @@ provider "azurerm" {
 
   # TODO: See TODO[0].
   # storage_use_azuread = true
+  use_oidc = true
 }
 
 locals {
