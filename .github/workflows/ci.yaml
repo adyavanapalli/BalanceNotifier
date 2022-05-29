@@ -40,7 +40,6 @@ jobs:
   terraform:
     env:
       ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
@@ -62,6 +61,9 @@ jobs:
     outputs:
       LINUX_FUNCTION_APP_NAME: ${{ steps.tf-output.outputs.LINUX_FUNCTION_APP_NAME }}
       RESOURCE_GROUP_NAME: ${{ steps.tf-output.outputs.RESOURCE_GROUP_NAME }}
+
+    permissions:
+      id-token: write
 
     runs-on: ubuntu-latest
     steps:
