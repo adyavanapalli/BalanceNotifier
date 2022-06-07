@@ -99,8 +99,8 @@ public class BalanceNotifier
 
         var tableEntity = await _storageService.GetTableEntity();
 
-        var previousDepositoryAccountBalance = tableEntity?[nameof(depositoryAccountBalance)] as string;
-        var previousCreditCardAccountBalance = tableEntity?[nameof(creditCardAccountBalance)] as string;
+        var previousDepositoryAccountBalance = tableEntity?[nameof(depositoryAccountBalance)] as string ?? string.Empty;
+        var previousCreditCardAccountBalance = tableEntity?[nameof(creditCardAccountBalance)] as string ?? string.Empty;
 
         // If the previous balances differ from the current ones, then only should we update the ones in storage and
         // additionally send a SMS message.
