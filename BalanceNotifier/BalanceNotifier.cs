@@ -109,8 +109,8 @@ public class BalanceNotifier
         {
             await _storageService.StoreTableEntity(new TableEntity(Guid.Empty.ToString(), Guid.Empty.ToString())
                                                    {
-                                                       {nameof(depositoryAccountBalance), depositoryAccountBalance},
-                                                       {nameof(creditCardAccountBalance), creditCardAccountBalance}
+                                                       {nameof(depositoryAccountBalance), $"{depositoryAccountBalance}"},
+                                                       {nameof(creditCardAccountBalance), $"{creditCardAccountBalance}"}
                                                    });
 
             await _smsApiService.SendMessageAsync($"[ {depositoryAccountBalance} | {creditCardAccountBalance} ]");
