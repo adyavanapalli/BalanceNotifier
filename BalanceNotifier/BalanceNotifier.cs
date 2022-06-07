@@ -84,13 +84,13 @@ public class BalanceNotifier
                                                 ?.FirstOrDefault(account => account.Type == "depository")
                                                 ?.Balances
                                                 ?.Current
-                                                ?.ToString("C", cultureInfo);
+                                                ?.ToString("C", cultureInfo) ?? string.Empty;
 
         var creditCardAccountBalance = container?.Accounts
                                                 ?.FirstOrDefault(account => account.Type == "credit")
                                                 ?.Balances
                                                 ?.Current
-                                                ?.ToString("C", cultureInfo);
+                                                ?.ToString("C", cultureInfo) ?? string.Empty;
 
         _logger.LogInformation("[{Source}] Successfully obtained and parsed account balances [depository = {DepositoryAccountBalance:C} | {CreditCardAccountBalance:C}].",
                                nameof(Run),
@@ -109,8 +109,8 @@ public class BalanceNotifier
         {
             await _storageService.StoreTableEntity(new TableEntity(Guid.Empty.ToString(), Guid.Empty.ToString())
                                                    {
-                                                       {nameof(depositoryAccountBalance), $"{depositoryAccountBalance}"},
-                                                       {nameof(creditCardAccountBalance), $"{creditCardAccountBalance}"}
+                                                       {nameof(depositoryAccountBalance), depositoryAccountBalance},
+                                                       {nameof(creditCardAccountBalance), creditCardAccountBalance}
                                                    });
 
             await _smsApiService.SendMessageAsync($"[ {depositoryAccountBalance} | {creditCardAccountBalance} ]");
